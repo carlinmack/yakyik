@@ -7,13 +7,14 @@ import { connect } from 'react-redux';
 import Todo from './Todo';
 
 export function TodoList(props) {
+    // console.log(props.todos)
     return (
         <ScrollView style={{ width: '100%' }}>
             {(props.todos) ?
                 props.todos.map(item => (
                     <Todo
                         text={item.text}
-                        key={item.key}
+                        index={item.index}
                         checked={item.checked}
                     />
                 )) : <Todo />
@@ -31,8 +32,6 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        increaseCounter: () => dispatch({ type: 'INCREASE_COUNTER' }),
-        decreaseCounter: () => dispatch({ type: 'DECREASE_COUNTER' }),
         addTodo: () => dispatch({ type: 'ADD_TODO' }),
         updateTodo: (text) => dispatch({ type: 'UPDATE_TODO', text: text })
     };

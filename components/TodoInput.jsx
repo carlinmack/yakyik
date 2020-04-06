@@ -4,6 +4,7 @@ import {
 } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { connect } from 'react-redux';
+import { addTodo } from '../actions/Todo';
 
 export function TodoInput(props) {
     return (
@@ -32,10 +33,8 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        increaseCounter: () => dispatch({ type: 'INCREASE_COUNTER' }),
-        decreaseCounter: () => dispatch({ type: 'DECREASE_COUNTER' }),
-        addTodo: () => dispatch({ type: 'ADD_TODO' }),
-        updateTodo: (text) => dispatch({ type: 'UPDATE_TODO', text: text })
+        addTodo: () => dispatch(addTodo()),
+        updateTodo: (text) => dispatch({ type: 'UPDATE_TODO', text: text }),
     };
 }
 

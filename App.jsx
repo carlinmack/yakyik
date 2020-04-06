@@ -3,33 +3,60 @@ import {
     StyleSheet,
     Text,
     View,
-    ScrollView,
+    Button,
 } from 'react-native';
-import { createStore } from 'redux'
+import { createStore, applyMiddleware } from 'redux'
 import { Provider } from 'react-redux'
+import thunk from 'redux-thunk';
+import { getTodos } from "./actions/Todo";
 
 import Icon from 'react-native-vector-icons/Feather';
 import TodoList from './components/TodoList';
 import TodoInput from './components/TodoInput';
 
+import * as Facebook from 'expo-facebook';
+import * as SecureStore from 'expo-secure-store';
+
+import * as firebase from 'firebase';
+import 'firebase/firestore';
+
+
+var firebaseConfig = {
+    apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
+    authDomain: "mobile-app-dev-4afcb.firebaseapp.com",
+    databaseURL: "https://mobile-app-dev-4afcb.firebaseio.com",
+    projectId: "mobile-app-dev-4afcb",
+    storageBucket: "mobile-app-dev-4afcb.appspot.com",
+    messagingSenderId: "455001591583",
+    appId: "1:455001591583:web:837973671dc17f3603ea2a"
+};
+
+// Initialize Firebase
+if (!firebase.apps.length) {
+    firebase.initializeApp(firebaseConfig);
+}
+
+
 const initialState = {
     currentText: "",
-    todos: [{ text: "Don't get Coronavirus", key: 0, checked: false },
-    { text: "Buy Toilet paper", key: 1, checked: false }],
+    todos: [],
+    token: null,
 }
-initialState.counter = initialState.todos.length;
 
 const reducer = (state = initialState, action) => {
     switch (action.type) {
-        case 'INCREASE_COUNTER':
-            return { counter: state.counter + 1 }
-        case 'DECREASE_COUNTER':
-            return { counter: state.counter - 1 }
+        case 'GET_TODOS':
+            return {
+                ...state,
+                todos: action.todos,
+                counter: action.counter
+            }
+
         case 'ADD_TODO':
             if (state.currentText.length > 0) {
                 // console.log(state)
 
-                newState = {
+                let newState = {
                     ...state,
                     todos: [
                         { text: state.currentText, key: state.counter, checked: false }, ...state.todos
@@ -43,24 +70,139 @@ const reducer = (state = initialState, action) => {
             return state
         case 'UPDATE_TODO':
             return { ...state, currentText: action.text }
+        case 'CHECK_TODO':
+            let newTodos = state.todos.map((item, index) => {
+                if (item.text !== action.text) {
+                    return item
+                }
+
+                return {
+                    ...item,
+                    checked: !item.checked,
+                }
+            })
+
+            return { ...state, todos: newTodos }
+        case 'REMOVE_TODO':
+            let removeTodos = state.todos.filter((item, index) => item.text !== action.text)
+
+            return { ...state, todos: removeTodos }
+        case 'LOGIN_FACEBOOK':
+            return { ...state, token: action.token }
     }
     return state
 }
 
-const store = createStore(reducer)
+const store = createStore(reducer,
+    applyMiddleware(thunk))
+
+
+setTimeout(() => {
+    checkForToken();
+}, 2000);
+checkForFirebaseCredential();
+// Listen for authentication state to change.
+firebase.auth().onAuthStateChanged(user => {
+    if (user != null) {
+        console.log('We are authenticated now!');
+        Alert.alert('We authneticated with Fireabse!', `Hi ${user}`);
+    }
+});
 
 export default function App() {
-    console.log(store)
-
-    return (
-        <Provider store={store}>
+    console.log(initialState.token)
+    if (initialState.token === null) {
+        return (
             <View style={styles.container}>
-                <Text style={styles.header}>To Do</Text>
-                <TodoInput></TodoInput>
-                <TodoList></TodoList>
+                <Button title="LogIn With Facebook" onPress={() => logIn()} />
             </View>
-        </Provider >
-    );
+        );
+    } else {
+        store.dispatch(getTodos())
+
+        return (
+            <Provider store={store}>
+                <View style={styles.container}>
+                    <Text style={styles.header}>To Do</Text>
+                    <TodoInput></TodoInput>
+                    <TodoList></TodoList>
+                </View>
+            </Provider >
+        );
+    }
+}
+
+//Check Async Storage if token is available
+//If it is available set loading state to false
+async function checkForToken() {
+    let token = await SecureStore.getItemAsync('token');
+
+    store.dispatch({
+        type: 'LOGIN_FACEBOOK', token: token,
+        loading: false,
+    })
+}
+
+async function checkForFirebaseCredential() {
+    let credential = await SecureStore.getItemAsync('firebaseCredential');
+    if (credential) {
+        firebase
+            .auth()
+            .signInWithCredential(credential)
+            .catch(error => {
+                console.log('Auth failed and here the error' + JSON.stringify(error));
+            });
+    }
+}
+
+//Write token to secure storage and firebase credital.
+async function saveTokenToSecureStorage(token, credential) {
+    SecureStore.setItemAsync('token', token);
+    //Save Firebase credential
+    SecureStore.setItemAsync('firebaseCredential', credential);
+    store.dispatch({
+        type: 'LOGIN_FACEBOOK', token: token,
+        loading: false,
+    })
+}
+
+async function logIn() {
+    try {
+        //Seed documentation on course site at mobileappdev.teachable.com
+        //For default user names and passwords.
+        await Facebook.initializeAsync('238123923880467');
+        const {
+            type,
+            token,
+            expires,
+            permissions,
+            declinedPermissions,
+        } = await Facebook.logInWithReadPermissionsAsync({
+            permissions: ['public_profile'],
+        });
+        if (type === 'success') {
+            // Get the user's name using Facebook's Graph API
+            const response = await fetch(
+                `https://graph.facebook.com/me?access_token=${token}`
+            );
+            let credential = firebase.auth.FacebookAuthProvider.credential(
+                token
+            );
+            firebase
+                .auth()
+                .signInWithCredential(credential)
+                .catch(error => {
+                    console.log(
+                        'Auth failed and here is the error ' + JSON.stringify(error)
+                    );
+                });
+            this.saveTokenToSecureStorage(token, credential);
+        } else {
+            // type === 'cancel'
+        }
+    } catch ({ message }) {
+        alert(`Facebook Login Error: ${message}`);
+    }
 }
 
 const styles = StyleSheet.create({
@@ -68,7 +210,8 @@ const styles = StyleSheet.create({
         flex: 1,
         justifyContent: 'flex-start',
         alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        justifyContent: 'center',
+        backgroundColor: '#e8e6e3',
     },
     header: {
         marginTop: '15%',

@@ -2,6 +2,8 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, View, Text } from 'react-native';
 import Icon from 'react-native-vector-icons/Feather';
 import { connect } from 'react-redux';
+import { setChecked } from '../actions/Todo';
+import { deleteTodo } from '../actions/Todo';
 
 export function Todo(props) {
     return (
@@ -11,7 +13,7 @@ export function Todo(props) {
                 size={30}
                 color="black"
                 style={{ marginLeft: 15 }}
-                onPress={props.setChecked}
+                onPress={() => (props.setChecked(props.text, props.index))}
             />
             <View>
                 {props.checked && <View style={styles.verticalLine} />}
@@ -22,22 +24,21 @@ export function Todo(props) {
                 size={30}
                 color="red"
                 style={{ marginLeft: 'auto', marginRight: 15 }}
-                onPress={props.deleteTodo}
+                onPress={() => { props.deleteTodo(props.text, props.index) }}
             />
         </View>
     );
 }
 
 function mapStateToProps(state) {
-    return {
-        counter: state.counter,
-    };
+    return state
 }
+
 
 function mapDispatchToProps(dispatch) {
     return {
-        increaseCounter: () => dispatch({ type: 'INCREASE_COUNTER' }),
-        decreaseCounter: () => dispatch({ type: 'DECREASE_COUNTER' }),
+        setChecked: (text, key) => dispatch(setChecked(text, key)),
+        deleteTodo: (text, key) => dispatch(deleteTodo(text, key)),
     };
 }
 
