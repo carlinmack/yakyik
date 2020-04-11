@@ -23,16 +23,18 @@ export function getTodos() {
     return (dispatch) => {
         let user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
 
-        let todo = user.collection("todos").where("deleted", "==", false);
-
         let counter = 0;
         user.get()
             .then((doc) => {
-                console.log("doc", doc.data());
+                // console.log("doc", doc.data());
                 if (doc.exists) {
-                    counter = doc.data().counter;
+                    dispatch({ type: "GET_COUNTER", counter: doc.data().counter });
 
-                    dispatch({ type: "GET_COUNTER", counter: counter });
+                    let todos = doc
+                        .data()
+                        .todos.filter((item) => item["deleted"] === false);
+
+                    dispatch({ type: "GET_TODOS", todos: todos });
                 } else {
                     // doc.data() will be undefined in this case
                     console.log("No such document!");
@@ -41,37 +43,19 @@ export function getTodos() {
             .catch(function (error) {
                 console.log("Error getting document:", error);
             });
-
-        todo.get()
-            .then((docs) => {
-                let todos = [];
-
-                docs.forEach((doc) => {
-                    todos.push({ ...doc.data(), index: doc.id, key: doc.id });
-                });
-
-                console.log("getTodos");
-
-                dispatch({ type: "GET_TODOS", todos: todos });
-            })
-            .catch((error) => {
-                console.log("Error getting document:", error);
-            });
     };
 }
 
 export function updateTodos(newTodos) {
     return (dispatch, getState) => {
-        let todos = [];
-        let index = 0;
-        newTodos.forEach((doc) => {
-            todos.push({ ...doc.data(), index: index, key: index });
-            index = index + 1;
+        let todos = newTodos.filter((item) => item["deleted"] === false);
+
+        dispatch({ type: "GET_TODOS", todos: todos });
+        dispatch({
+            type: "GET_TODOS",
+            todos: todos,
+            counter: getState().counter + 1,
         });
-
-        console.log("updateTodos");
-
-        dispatch({ type: "GET_TODOS", todos: todos, counter: getState().counter + 1 });
     };
 }
 
@@ -84,38 +68,22 @@ export function addTodo() {
 
         if (text.length > 0) {
             console.log("here ", getState().counter.toString());
-            userRef
-                .doc(getState().counter.toString())
-                .set({
+            user.update({
+                todos: firebase.firestore.FieldValue.arrayUnion({
                     text: getState().currentText,
                     checked: false,
                     deleted: false,
                     likes: 0,
-                })
-                .then(function (docRef) {
-                    console.log("horo");
-                    dispatch({ type: "ADD_TODO" });
-
-                    user.update({
-                        counter: getState().counter + 1,
-                    })
-                        .then(function () {
-                            console.log("Document successfully updated!");
-                        })
-                        .catch(function (error) {
-                            console.error("Error updating document: ", error);
-                        });
-                })
-                .catch(function (error) {
-                    console.error("Error flipping adding document: ", error);
-                });
+                }),
+                counter: firebase.firestore.FieldValue.increment(1),
+            }).then(() => {
+                dispatch({ type: "ADD_TODO" });
+            });
         }
     };
 }
 
 export function setChecked(text, key) {
-    // console.log(text)
-    // console.log(key)
     return (dispatch, getState) => {
         let todo = db
             .collection("users")
@@ -162,22 +130,22 @@ export function deleteTodo(text, key) {
 }
 
 export function like(key) {
-    console.log("Like");
     return (dispatch, getState) => {
         console.log("hello");
-        let todo = db
-            .collection("users")
-            .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
-            .collection("todos")
-            .doc(key.toString());
+        const user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
 
         dispatch({ type: "LIKE", key: key });
 
-        todo.get()
+        user.get()
             .then((doc) => {
                 if (doc.exists) {
-                    todo.update({
-                        likes: doc.data().likes + 1,
+                    const todos = [
+                        ...doc.todos.slice(0, key),
+                        doc.todos[key]["likes"] + 1,
+                        ...doc.todos.slice(key + 1),
+                    ];
+                    doc.update({
+                        todos: todos,
                     })
                         .then(function (docRef) {})
                         .catch(function (error) {

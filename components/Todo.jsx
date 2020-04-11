@@ -17,7 +17,7 @@ export function Todo(props) {
                     size={30}
                     color="red"
                     onPress={() => {
-                        props.like(props.index);
+                        props.like(props);
                     }}
                 />
                 <Text>{props.likes}</Text>
@@ -32,8 +32,11 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        setChecked: (text, key) => dispatch(setChecked(text, key)),
-        like: (key) => dispatch(like(key)),
+        setChecked: (text, index) => dispatch(setChecked(text, index)),
+        like: (index) => {
+            console.log(index.index, index.key, index.text);
+            dispatch(like(index));
+        },
     };
 }
 

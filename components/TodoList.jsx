@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import Todo from "./Todo";
 
 export function TodoList(props) {
-    // console.log(props.todos)
+    console.log(props.todos[0]);
     return (
         <ScrollView style={{ width: "100%" }}>
             {props.todos ? (
@@ -13,7 +13,7 @@ export function TodoList(props) {
                     <Todo
                         text={item.text}
                         index={item.index}
-                        key={item.index}
+                        key={item.key}
                         checked={item.checked}
                         likes={item.likes}
                     />

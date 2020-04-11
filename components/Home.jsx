@@ -2,13 +2,10 @@ import React from "react";
 import { StyleSheet, View, Text } from "react-native";
 
 import { connect } from "react-redux";
-import { createStore, applyMiddleware } from "redux";
-import thunk from "redux-thunk";
 
 import TodoList from "./TodoList";
 import TodoInput from "./TodoInput";
 import { updateTodos, getTodos } from "../actions/Todo";
-import * as SecureStore from "expo-secure-store";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -64,8 +61,6 @@ function mapStateToProps(state) {
 function mapDispatchToProps(dispatch) {
     return {
         getTodos: () => dispatch(getTodos()),
-        updateTodos: (newTodos) => dispatch(updateTodos(newTodos)),
-        login: () => dispatch({ type: "LOGIN_FACEBOOK" }),
     };
 }
 
@@ -77,10 +72,14 @@ var db = firebase.firestore();
 
 db.collection("users")
     .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
-    .collection("todos")
-    .where("deleted", "==", false)
-    .onSnapshot((newTodos) => {
-        store.dispatch(updateTodos(newTodos));
+    .onSnapshot((doc) => {
+        store.dispatch(updateTodos(doc.data().todos));
+    });
+
+db.collection("users")
+    .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
+    .onSnapshot((newCounter) => {
+        store.dispatch({ type: "UPDATE_COUNTER", counter: newCounter });
     });
 
 const styles = StyleSheet.create({
