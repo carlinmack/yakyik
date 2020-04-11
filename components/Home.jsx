@@ -1,22 +1,18 @@
-import React from 'react';
-import {
-    StyleSheet,
-    View,
-    Text,
-} from 'react-native';
+import React from "react";
+import { StyleSheet, View, Text } from "react-native";
 
-import { connect } from 'react-redux';
-import { createStore, applyMiddleware } from 'redux'
-import thunk from 'redux-thunk';
+import { connect } from "react-redux";
+import { createStore, applyMiddleware } from "redux";
+import thunk from "redux-thunk";
 
-import TodoList from './TodoList';
-import TodoInput from './TodoInput';
-import { updateTodos, getTodos, } from "../actions/Todo";
-import * as SecureStore from 'expo-secure-store';
+import TodoList from "./TodoList";
+import TodoInput from "./TodoInput";
+import { updateTodos, getTodos } from "../actions/Todo";
+import * as SecureStore from "expo-secure-store";
 
-import * as firebase from 'firebase';
-import 'firebase/firestore';
-import store from '../actions/store';
+import * as firebase from "firebase";
+import "firebase/firestore";
+import store from "../actions/store";
 
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
@@ -25,7 +21,7 @@ var firebaseConfig = {
     projectId: "mobile-app-dev-4afcb",
     storageBucket: "mobile-app-dev-4afcb.appspot.com",
     messagingSenderId: "455001591583",
-    appId: "1:455001591583:web:837973671dc17f3603ea2a"
+    appId: "1:455001591583:web:837973671dc17f3603ea2a",
 };
 
 // Initialize Firebase
@@ -38,9 +34,9 @@ export function Home(props) {
     //     checkForToken(props);
     // }, 2000);
 
-    // 
+    //
 
-    console.log('run Home')
+    console.log("run Home");
 
     return (
         <View style={styles.container}>
@@ -48,7 +44,7 @@ export function Home(props) {
             <TodoList></TodoList>
             <TodoInput></TodoInput>
         </View>
-    )
+    );
 }
 
 //Check Async Storage if token is available
@@ -61,7 +57,7 @@ export function Home(props) {
 
 function mapStateToProps(state) {
     return {
-        todos: state.todos
+        todos: state.todos,
     };
 }
 
@@ -69,39 +65,35 @@ function mapDispatchToProps(dispatch) {
     return {
         getTodos: () => dispatch(getTodos()),
         updateTodos: (newTodos) => dispatch(updateTodos(newTodos)),
-        login: () => dispatch({ type: 'LOGIN_FACEBOOK' }),
+        login: () => dispatch({ type: "LOGIN_FACEBOOK" }),
     };
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Home);
+export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
-store.dispatch(getTodos())
+store.dispatch(getTodos());
 
 var db = firebase.firestore();
 
 db.collection("users")
-    .doc('A4vrp1H3bETPYQfpXkURdDEdBo93')
+    .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
     .collection("todos")
     .where("deleted", "==", false)
     .onSnapshot((newTodos) => {
-        store.dispatch(updateTodos(newTodos))
+        store.dispatch(updateTodos(newTodos));
     });
-
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        backgroundColor: '#e8e6e3',
+        alignItems: "center",
+        justifyContent: "space-evenly",
+        backgroundColor: "#e8e6e3",
     },
     header: {
-        marginTop: '15%',
+        marginTop: "15%",
         fontSize: 20,
-        fontWeight: 'bold',
+        fontWeight: "bold",
         paddingBottom: 10,
     },
 });

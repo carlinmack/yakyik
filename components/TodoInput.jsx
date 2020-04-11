@@ -1,10 +1,8 @@
-import React from 'react';
-import {
-    StyleSheet, TouchableOpacity, View, TextInput, Text
-} from 'react-native';
-import Icon from 'react-native-vector-icons/Feather';
-import { connect } from 'react-redux';
-import { addTodo } from '../actions/Todo';
+import React from "react";
+import { StyleSheet, TouchableOpacity, View, TextInput, Text } from "react-native";
+import Icon from "react-native-vector-icons/Feather";
+import { connect } from "react-redux";
+import { addTodo } from "../actions/Todo";
 
 export function TodoInput(props) {
     return (
@@ -14,7 +12,9 @@ export function TodoInput(props) {
                 multiline={true}
                 placeholder="New Post"
                 placeholderTextColor="#abbabb"
-                onChangeText={(value) => { props.updateTodo(value) }}
+                onChangeText={(value) => {
+                    props.updateTodo(value);
+                }}
                 value={props.currentText}
             />
             <TouchableOpacity onPress={props.addTodo}>
@@ -27,40 +27,36 @@ export function TodoInput(props) {
 function mapStateToProps(state) {
     return {
         counter: state.counter,
-        currentText: state.currentText
+        currentText: state.currentText,
     };
 }
 
 function mapDispatchToProps(dispatch) {
     return {
         addTodo: () => dispatch(addTodo()),
-        updateTodo: (text) => dispatch({ type: 'UPDATE_TODO', text: text }),
+        updateTodo: (text) => dispatch({ type: "UPDATE_TODO", text: text }),
     };
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(TodoInput);
-
+export default connect(mapStateToProps, mapDispatchToProps)(TodoInput);
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        justifyContent: 'flex-start',
-        alignItems: 'center',
-        backgroundColor: '#F5FCFF',
+        justifyContent: "flex-start",
+        alignItems: "center",
+        backgroundColor: "#F5FCFF",
     },
     header: {
-        marginTop: '15%',
+        marginTop: "15%",
         fontSize: 20,
-        color: 'red',
+        color: "red",
         paddingBottom: 10,
     },
     textInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        borderColor: 'black',
+        flexDirection: "row",
+        alignItems: "baseline",
+        borderColor: "black",
         borderBottomWidth: 1,
         paddingRight: 10,
         paddingBottom: 10,
@@ -69,9 +65,9 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 20,
         fontSize: 18,
-        fontWeight: 'bold',
-        color: 'black',
+        fontWeight: "bold",
+        color: "black",
         paddingLeft: 10,
-        minHeight: '3%',
+        minHeight: "3%",
     },
 });

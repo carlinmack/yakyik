@@ -1,22 +1,19 @@
-import React, { useState } from 'react';
-import {
-    StyleSheet,
-} from 'react-native';
-import { createStore, applyMiddleware, getState } from 'redux'
-import { Provider } from 'react-redux'
+import React, { useState } from "react";
+import { StyleSheet } from "react-native";
+import { createStore, applyMiddleware, getState } from "redux";
+import { Provider } from "react-redux";
 
-import LogIn from './components/LogIn';
-import Home from './components/Home';
+import LogIn from "./components/LogIn";
+import Home from "./components/Home";
 
+import * as Facebook from "expo-facebook";
+import * as SecureStore from "expo-secure-store";
 
-import * as Facebook from 'expo-facebook';
-import * as SecureStore from 'expo-secure-store';
+import * as firebase from "firebase";
+import "firebase/firestore";
 
-import * as firebase from 'firebase';
-import 'firebase/firestore';
-
-import reducer from './actions/reducer'
-import store from './actions/store'
+import reducer from "./actions/reducer";
+import store from "./actions/store";
 
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
@@ -25,7 +22,7 @@ var firebaseConfig = {
     projectId: "mobile-app-dev-4afcb",
     storageBucket: "mobile-app-dev-4afcb.appspot.com",
     messagingSenderId: "455001591583",
-    appId: "1:455001591583:web:837973671dc17f3603ea2a"
+    appId: "1:455001591583:web:837973671dc17f3603ea2a",
 };
 
 // Initialize Firebase
@@ -33,13 +30,12 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-
 const initialState = {
     currentText: "",
     todos: [],
     token: null,
     counter: 0,
-}
+};
 
 // setTimeout(() => {
 //     checkForToken();
@@ -54,24 +50,16 @@ const initialState = {
 // });
 
 export default function App() {
-    console.log('[APP')
+    console.log("[APP");
     // console.log(store.getState().token)
     // console.log(store.token)
-    console.log('APP]')
+    console.log("APP]");
 
     return (
         <Provider store={store}>
-            {(store.getState().token === null) ?
-                <Home />
-                :
-                <LogIn />
-            }
-
+            {store.getState().token === null ? <Home /> : <LogIn />}
         </Provider>
     );
-
-
-
 }
 
 //Check Async Storage if token is available
@@ -144,18 +132,17 @@ export default function App() {
 //     }
 // }
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        alignItems: 'center',
-        justifyContent: 'space-evenly',
-        backgroundColor: '#e8e6e3',
+        alignItems: "center",
+        justifyContent: "space-evenly",
+        backgroundColor: "#e8e6e3",
     },
     textInputContainer: {
-        flexDirection: 'row',
-        alignItems: 'baseline',
-        borderColor: 'black',
+        flexDirection: "row",
+        alignItems: "baseline",
+        borderColor: "black",
         borderBottomWidth: 1,
         paddingRight: 10,
         paddingBottom: 10,
@@ -164,9 +151,9 @@ const styles = StyleSheet.create({
         flex: 1,
         height: 20,
         fontSize: 18,
-        fontWeight: 'bold',
-        color: 'black',
+        fontWeight: "bold",
+        color: "black",
         paddingLeft: 10,
-        minHeight: '3%',
+        minHeight: "3%",
     },
 });
