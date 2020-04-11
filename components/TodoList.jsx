@@ -15,7 +15,9 @@ export function TodoList(props) {
                     <Todo
                         text={item.text}
                         index={item.index}
+                        key={item.index}
                         checked={item.checked}
+                        likes={item.likes}
                     />
                 )) : <Todo />
             }

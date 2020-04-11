@@ -12,13 +12,13 @@ export function TodoInput(props) {
             <TextInput
                 style={styles.textInput}
                 multiline={true}
-                placeholder="Add Task"
+                placeholder="New Post"
                 placeholderTextColor="#abbabb"
                 onChangeText={(value) => { props.updateTodo(value) }}
                 value={props.currentText}
             />
             <TouchableOpacity onPress={props.addTodo}>
-                <Icon name="plus" size={30} color="black" style={{ marginLeft: 15 }} />
+                <Icon name="send" size={30} color="black" style={{ marginLeft: 15 }} />
             </TouchableOpacity>
         </View>
     );
