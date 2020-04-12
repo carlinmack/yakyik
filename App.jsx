@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-import { StyleSheet } from "react-native";
+import React, { useState, useEffect, createContext } from "react";
+import { StyleSheet, Text, TouchableOpacity } from "react-native";
 import { createStore, applyMiddleware, getState } from "redux";
+import Icon from "react-native-vector-icons/Feather";
 import { Provider } from "react-redux";
 
 import LogIn from "./components/LogIn";
@@ -14,6 +15,8 @@ import "firebase/firestore";
 
 import reducer from "./actions/reducer";
 import store from "./actions/store";
+import { NavigationContainer } from "@react-navigation/native";
+import { createStackNavigator } from "@react-navigation/stack";
 
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
@@ -48,19 +51,120 @@ const initialState = {
 //         store.dispatch(loginFacebook(user))
 //     }
 // });
+const Stack = createStackNavigator();
 
-export default function App() {
-    console.log("[APP");
-    // console.log(store.getState().token)
-    // console.log(store.token)
-    console.log("APP]");
+export const AuthContext = createContext(null);
 
-    return (
+export default function AuthNavigator() {
+    const [initializing, setInitializing] = useState(true);
+    const [user, setUser] = useState(null);
+
+    // Handle user state changes
+    function onAuthStateChanged(result) {
+        // console.log("auth State", result);
+        if (result) {
+            setUser(result.uid);
+        } else {
+            setUser(null);
+        }
+        if (initializing) setInitializing(false);
+    }
+
+    async function logOut() {
+        console.log("signing out");
+        try {
+            await firebase.auth().signOut();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    useEffect(() => {
+        const authSubscriber = firebase.auth().onAuthStateChanged(onAuthStateChanged);
+
+        // unsubscribe on unmount
+        return authSubscriber;
+    }, []);
+
+    if (initializing) {
+        return null;
+    }
+
+    return user ? (
         <Provider store={store}>
-            {store.getState().token === null ? <Home /> : <LogIn />}
+            <NavigationContainer>
+                <Stack.Navigator>
+                    <Stack.Screen
+                        name="YakYik"
+                        component={Home}
+                        options={{
+                            headerStyle: {
+                                backgroundColor: "#f4f3f1",
+                            },
+                            headerTitleStyle: {
+                                fontWeight: "bold",
+                            },
+                            headerTitleAlign: "center",
+                            headerRight: () => (
+                                <TouchableOpacity onPress={logOut}>
+                                    <Icon
+                                        name="log-out"
+                                        size={20}
+                                        color="black"
+                                        style={{ marginRight: 10, marginLeft: 5 }}
+                                    />
+                                </TouchableOpacity>
+                            ),
+                        }}
+                    />
+                </Stack.Navigator>
+            </NavigationContainer>
+        </Provider>
+    ) : (
+        <Provider store={store}>
+            <AuthContext.Provider value={user}>
+                <LogIn />
+            </AuthContext.Provider>
         </Provider>
     );
 }
+
+// export default function App() {
+//     console.log("[APP");
+//     console.log(store.getState().token);
+//     console.log(store.token);
+//     console.log("APP]");
+
+//     return (
+//         <Provider store={store}>
+//             <NavigationContainer>
+//                 <Stack.Navigator>
+//                     {store.getState().token !== "dummy-auth-token" ? (
+//                         <Stack.Screen
+//                             name="LogIn"
+//                             component={LogIn}
+//                             options={{ headerShown: false }}
+//                         />
+//                     ) : (
+//                         <Stack.Screen
+//                             name="YakYik"
+//                             component={Home}
+//                             options={{
+//                                 headerStyle: {
+//                                     backgroundColor: "#f4f3f1",
+//                                 },
+//                                 headerTitleStyle: {
+//                                     fontWeight: "bold",
+//                                 },
+//                                 headerTitleAlign: "center",
+//                             }}
+//                         />
+//                     )}
+//                 </Stack.Navigator>
+//             </NavigationContainer>
+//         </Provider>
+//     );
+// }
 
 //Check Async Storage if token is available
 //If it is available set loading state to false

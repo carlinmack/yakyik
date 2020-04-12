@@ -1,11 +1,11 @@
-import React from "react";
-import { StyleSheet, View, Text } from "react-native";
+import React, { useContext } from "react";
+import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
 
 import { connect } from "react-redux";
 
 import TodoList from "./TodoList";
 import TodoInput from "./TodoInput";
-import { updateTodos, getTodos } from "../actions/Todo";
+import { updateTodos, getTodos } from "../actions/middleware";
 
 import * as firebase from "firebase";
 import "firebase/firestore";
@@ -33,11 +33,19 @@ export function Home(props) {
 
     //
 
+    async function logOut() {
+        console.log("signing out");
+        try {
+            await firebase.auth().signOut();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
     console.log("run Home");
 
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>YakYik</Text>
             <TodoList></TodoList>
             <TodoInput></TodoInput>
         </View>
@@ -79,7 +87,7 @@ db.collection("users")
 db.collection("users")
     .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
     .onSnapshot((newCounter) => {
-        store.dispatch({ type: "UPDATE_COUNTER", counter: newCounter });
+        store.dispatch({ type: "UPDATE_COUNTER", counter: newCounter.data().counter });
     });
 
 const styles = StyleSheet.create({

@@ -5,15 +5,16 @@ import { connect } from "react-redux";
 import Todo from "./Todo";
 
 export function TodoList(props) {
-    console.log(props.todos[0]);
+    // console.log(props.todos[0]);
     return (
         <ScrollView style={{ width: "100%" }}>
             {props.todos ? (
                 props.todos.map((item) => (
                     <Todo
+                        postUsername={item.username}
                         text={item.text}
                         index={item.index}
-                        key={item.key}
+                        key={item.index}
                         checked={item.checked}
                         likes={item.likes}
                     />

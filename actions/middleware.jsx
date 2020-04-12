@@ -51,32 +51,28 @@ export function updateTodos(newTodos) {
         let todos = newTodos.filter((item) => item["deleted"] === false);
 
         dispatch({ type: "GET_TODOS", todos: todos });
-        dispatch({
-            type: "GET_TODOS",
-            todos: todos,
-            counter: getState().counter + 1,
-        });
     };
 }
 
 export function addTodo() {
-    console.log("heapp");
     return (dispatch, getState) => {
         let user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
         let userRef = user.collection("todos");
         let text = getState().currentText;
 
         if (text.length > 0) {
-            console.log("here ", getState().counter.toString());
             user.update({
                 todos: firebase.firestore.FieldValue.arrayUnion({
                     text: getState().currentText,
                     checked: false,
                     deleted: false,
+                    index: getState().counter,
                     likes: 0,
+                    username: getState().username,
                 }),
                 counter: firebase.firestore.FieldValue.increment(1),
             }).then(() => {
+                console.log("harry ");
                 dispatch({ type: "ADD_TODO" });
             });
         }
@@ -131,7 +127,7 @@ export function deleteTodo(text, key) {
 
 export function like(key) {
     return (dispatch, getState) => {
-        console.log("hello");
+        console.log("hello", key);
         const user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
 
         dispatch({ type: "LIKE", key: key });
@@ -139,12 +135,16 @@ export function like(key) {
         user.get()
             .then((doc) => {
                 if (doc.exists) {
+                    let likedTodo = doc.data().todos[key];
+                    likedTodo["likes"]++;
+
                     const todos = [
-                        ...doc.todos.slice(0, key),
-                        doc.todos[key]["likes"] + 1,
-                        ...doc.todos.slice(key + 1),
+                        ...doc.data().todos.slice(0, key),
+                        likedTodo,
+                        ...doc.data().todos.slice(key + 1),
                     ];
-                    doc.update({
+
+                    user.update({
                         todos: todos,
                     })
                         .then(function (docRef) {})
@@ -162,6 +162,7 @@ export function like(key) {
 }
 
 export function loginFacebook(token, user) {
+    console.log("midlog");
     return (dispatch) => {
         console.log(token, user);
 
@@ -184,5 +185,27 @@ export function loginFacebook(token, user) {
         // }).catch(function (error) {
         //     console.error("Error removing document: ", error);
         // });
+    };
+}
+
+export function logIn() {
+    console.log("signing in 1");
+    return async (dispatch) => {
+        console.log("signing in 2");
+        try {
+            await firebase.auth().signInAnonymously();
+            dispatch({ type: "LOGIN" });
+        } catch (e) {
+            switch (e.code) {
+                case "auth/operation-not-allowed":
+                    console.log("Enable anonymous in your firebase console.");
+                    break;
+                default:
+                    console.log("heheheeheh");
+                    console.error(e);
+                    break;
+            }
+        }
+        return "done";
     };
 }

@@ -9,13 +9,14 @@ const reducer = (state = initialState, action) => {
     switch (action.type) {
         case "GET_TODOS":
             console.log("tod ");
-            console.log(action.todos);
+            // console.log(action.todos);
             return {
                 ...state,
                 todos: action.todos,
             };
         case "GET_COUNTER":
             console.log("cou ");
+            // console.log(action.counter);
 
             return {
                 ...state,
@@ -36,8 +37,12 @@ const reducer = (state = initialState, action) => {
         case "UPDATE_TODO":
             console.log("updtod ");
             return { ...state, currentText: action.text };
+        case "UPDATE_USERNAME":
+            console.log("updusr ");
+            return { ...state, currentUsername: action.text };
         case "UPDATE_COUNTER":
             console.log("updcou ");
+            // console.log(action.counter);
             return { ...state, counter: action.counter };
         case "CHECK_TODO":
             console.log("che ");
@@ -53,28 +58,29 @@ const reducer = (state = initialState, action) => {
             });
 
             return { ...state, todos: newTodos };
-        case "LOGIN_FACEBOOK":
-            console.log("log ");
+        case "LOGIN":
+            console.log("log ", state.currentUsername);
             return {
                 ...state,
-                token: state.token + 1,
+                username: state.currentUsername,
             };
         case "LIKE":
-            console.log("lik ");
-            console.log(action.key);
+            const index = state.todos.findIndex((todo) => todo["index"] == action.key);
 
-            const index = state.todos.findIndex(
-                (todo) => todo["key"] == action.key - 1
-            );
+            let likedTodo = {
+                ...state.todos[index],
+                likes: state.todos[index]["likes"] + 1,
+            };
 
             const todos = [
                 ...state.todos.slice(0, index),
-                state.todos[index]["likes"] + 1,
+                likedTodo,
                 ...state.todos.slice(index + 1),
             ];
+
             return {
                 ...state,
-                ...todos,
+                todos: todos,
             };
     }
     return state;
