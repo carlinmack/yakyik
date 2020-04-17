@@ -3,25 +3,79 @@ import { StyleSheet, View, TouchableOpacity, TextInput, Text } from "react-nativ
 import * as firebase from "firebase";
 
 import { connect } from "react-redux";
-import Todo from "./Todo";
-import { setUsername, checkPassword } from "../actions/middleware";
+import { setUsername, setPassword, checkPassword } from "../actions/middleware";
 
-export function LogIn(props) {
-    console.log(props.currentUsername);
+export function Profile(props) {
+    console.log("profile");
+    console.log(props.showPasswordInputButton);
     return (
         <View style={styles.container}>
-            <Text style={styles.header}>YakYik</Text>
-            <View style={styles.textInputContainer}>
+            <Text style={styles.header}>{props.username}</Text>
+            <View
+                style={{
+                    flexDirection: "row",
+                    width: "100%",
+                    justifyContent: "space-evenly",
+                }}
+            >
+                <TouchableOpacity
+                    style={
+                        props.showUserInputButton ? styles.button : { display: "none" }
+                    }
+                    onPress={props.showUserInput}
+                >
+                    <Text style={styles.buttonText}>Change Username</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    style={
+                        props.showPasswordInputButton
+                            ? styles.button
+                            : { display: "none" }
+                    }
+                    onPress={props.showPasswordInput}
+                >
+                    <Text style={styles.buttonText}>Set Password</Text>
+                </TouchableOpacity>
+            </View>
+            <View
+                style={
+                    props.showUserInputBool
+                        ? styles.textInputContainer
+                        : { display: "none" }
+                }
+            >
                 <TextInput
                     style={styles.textInput}
                     placeholder="Username"
                     placeholderTextColor="#abbabb"
+                    value={props.currentUsername}
                     onChangeText={(value) => {
                         props.updateUsername(value);
                     }}
                 />
-                <TouchableOpacity onPress={props.setUsername}>
-                    <Text style={styles.buttonText}>Select</Text>
+                <TouchableOpacity style={styles.button} onPress={props.setUsername}>
+                    <Text style={styles.buttonText}>Change</Text>
+                </TouchableOpacity>
+            </View>
+            <View
+                style={
+                    props.showPasswordInputBool
+                        ? styles.textInputContainer
+                        : { display: "none" }
+                }
+            >
+                <TextInput
+                    style={styles.textInput}
+                    placeholder="Password"
+                    placeholderTextColor="#abbabb"
+                    value={props.currentPassword}
+                    onChangeText={(value) => {
+                        props.updatePassword(value);
+                    }}
+                    secureTextEntry={true}
+                />
+                <TouchableOpacity style={styles.button} onPress={props.setPassword}>
+                    <Text style={styles.buttonText}>Set</Text>
                 </TouchableOpacity>
             </View>
             <View
@@ -75,7 +129,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(LogIn);
+export default connect(mapStateToProps, mapDispatchToProps)(Profile);
 
 const styles = StyleSheet.create({
     container: {
@@ -87,8 +141,16 @@ const styles = StyleSheet.create({
     header: {
         fontSize: 30,
     },
+    button: {
+        backgroundColor: "#f4f3f1",
+        paddingTop: 7.5,
+        paddingBottom: 7.5,
+        paddingLeft: 10,
+        paddingRight: 10,
+        borderRadius: 5,
+    },
     buttonText: {
-        fontSize: 20,
+        fontSize: 17.5,
         fontWeight: "bold",
     },
     textInputContainer: {
@@ -97,7 +159,6 @@ const styles = StyleSheet.create({
         minHeight: 50,
         maxHeight: 150,
         width: "90%",
-        borderRadius: 5,
         backgroundColor: "#f4f3f1",
         paddingRight: 10,
 

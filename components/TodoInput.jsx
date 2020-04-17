@@ -52,6 +52,7 @@ const styles = StyleSheet.create({
         minHeight: 50,
         maxHeight: 150,
         width: "90%",
+        borderRadius: 5,
         backgroundColor: "#f4f3f1",
 
         marginBottom: "5%",

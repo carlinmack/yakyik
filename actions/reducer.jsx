@@ -1,8 +1,19 @@
+import { useState } from "react";
+import * as firebase from "firebase";
+import "firebase/firestore";
+
 const initialState = {
-    currentText: "",
+    currentUsername: "",
+    currentPassword: "",
     todos: [],
     token: null,
     counter: 0,
+    showUserInput: false,
+    showPasswordInput: false,
+    showPasswordEnter: false,
+    showPasswordInputButton: true,
+    showUserInputButton: true,
+    sort: "new",
 };
 
 const reducer = (state = initialState, action) => {
@@ -38,8 +49,11 @@ const reducer = (state = initialState, action) => {
             console.log("updtod ");
             return { ...state, currentText: action.text };
         case "UPDATE_USERNAME":
-            console.log("updusr ");
+            console.log("updUSR ");
             return { ...state, currentUsername: action.text };
+        case "UPDATE_PASSWORD":
+            console.log("updPAS ");
+            return { ...state, currentPassword: action.text };
         case "UPDATE_COUNTER":
             console.log("updcou ");
             // console.log(action.counter);
@@ -58,11 +72,88 @@ const reducer = (state = initialState, action) => {
             });
 
             return { ...state, todos: newTodos };
+        case "SHOW_USER_INPUT":
+            return {
+                ...state,
+                showUserInput: !state.showUserInput,
+                showUserInputButton: !state.showUserInputButton,
+                showPasswordInputButton: !state.showUserInputButton,
+            };
+        case "SHOW_PASSWORD_INPUT":
+            return {
+                ...state,
+                showPasswordInput: !state.showPasswordInput,
+                showPasswordInputButton: !state.showPasswordInputButton,
+                showUserInputButton: !state.showPasswordInputButton,
+            };
+        case "SHOW_PASSWORD_ENTER":
+            console.log("SHpasENT");
+            return { ...state, showPasswordEnter: !state.showPasswordEnter };
+        case "RESET_PROFILE":
+            console.log("res");
+            return {
+                ...state,
+                showUserInput: false,
+                showPasswordInput: false,
+                showPasswordEnter: false,
+                showPasswordInputButton: true,
+                showUserInputButton: true,
+            };
         case "LOGIN":
             console.log("log ", state.currentUsername);
             return {
                 ...state,
                 username: state.currentUsername,
+                currentUsername: "",
+                showUserInput: false,
+                showPasswordEnter: false,
+                showPasswordInputButton: true,
+                showUserInputButton: true,
+            };
+        case "SET_PASSWORD":
+            console.log(action.text);
+            return {
+                ...state,
+                token: action.token,
+                currentPassword: "",
+                showPasswordInput: false,
+                showPasswordInputButton: true,
+                showUserInputButton: true,
+            };
+        case "SET_SORT":
+            let todos;
+            // console.log(state.todos[1]);
+            if (action.sort === "new") {
+                todos = state.todos.slice().sort(function (a, b) {
+                    return b.timestamp - a.timestamp;
+                });
+            } else if (action.sort === "hot") {
+                // console.log("hello");
+                todos = state.todos.slice().sort(function (a, b) {
+                    let now = new Date().getTime();
+                    let bTime = now - b.timestamp;
+                    let aTime = now - a.timestamp;
+                    let arank;
+                    let brank;
+                    if (a.likes) {
+                        arank = a.likes + Math.log(aTime);
+                    } else {
+                        arank = aTime;
+                    }
+                    if (b.likes) {
+                        brank = b.likes + Math.log(bTime);
+                    } else {
+                        brank = bTime;
+                    }
+                    return brank - arank;
+                });
+                // console.log(todos);
+            }
+            // console.log(todos[1]);
+
+            return {
+                ...state,
+                todos: todos,
             };
         case "LIKE":
             const index = state.todos.findIndex((todo) => todo["index"] == action.key);
@@ -72,7 +163,7 @@ const reducer = (state = initialState, action) => {
                 likes: state.todos[index]["likes"] + 1,
             };
 
-            const todos = [
+            let likedTodos = [
                 ...state.todos.slice(0, index),
                 likedTodo,
                 ...state.todos.slice(index + 1),
@@ -80,7 +171,7 @@ const reducer = (state = initialState, action) => {
 
             return {
                 ...state,
-                todos: todos,
+                todos: likedTodos,
             };
     }
     return state;

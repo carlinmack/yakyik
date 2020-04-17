@@ -1,5 +1,5 @@
-import React, { useContext } from "react";
-import { StyleSheet, View, Text, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import { StyleSheet, View, Picker, TouchableOpacity } from "react-native";
 
 import { connect } from "react-redux";
 
@@ -27,6 +27,7 @@ if (!firebase.apps.length) {
 }
 
 export function Home(props) {
+    const [selectedValue, setSelectedValue] = useState("java");
     // setTimeout(() => {
     //     checkForToken(props);
     // }, 2000);

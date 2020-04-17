@@ -1,11 +1,12 @@
 import React, { useState, useEffect, createContext } from "react";
-import { StyleSheet, Text, TouchableOpacity } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View, Picker } from "react-native";
 import { createStore, applyMiddleware, getState } from "redux";
 import Icon from "react-native-vector-icons/Feather";
 import { Provider } from "react-redux";
 
 import LogIn from "./components/LogIn";
 import Home from "./components/Home";
+import Profile from "./components/Profile";
 
 import * as Facebook from "expo-facebook";
 import * as SecureStore from "expo-secure-store";
@@ -15,7 +16,7 @@ import "firebase/firestore";
 
 import reducer from "./actions/reducer";
 import store from "./actions/store";
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 
 var firebaseConfig = {
@@ -33,13 +34,6 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-const initialState = {
-    currentText: "",
-    todos: [],
-    token: null,
-    counter: 0,
-};
-
 // setTimeout(() => {
 //     checkForToken();
 // }, 2000);
@@ -55,6 +49,84 @@ const Stack = createStackNavigator();
 
 export const AuthContext = createContext(null);
 
+function ProfileButton() {
+    const navigation = useNavigation();
+    return (
+        <TouchableOpacity
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 50,
+            }}
+            onPress={() => navigation.push("Profile")}
+        >
+            <Icon name="user" size={20} color="black" style={{ marginLeft: 15 }} />
+        </TouchableOpacity>
+    );
+}
+
+function HeaderRight() {
+    async function logOut() {
+        console.log("signing out");
+        try {
+            await firebase.auth().signOut();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const [selectedSort, setSelectedSort] = useState("new");
+
+    return (
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Picker
+                selectedValue={selectedSort}
+                style={{ height: 50, width: 100 }}
+                onValueChange={(itemValue, itemIndex) => {
+                    store.dispatch({ type: "SET_SORT", sort: itemValue });
+                    setSelectedSort(itemValue);
+                }}
+                mode="dropdown"
+            >
+                <Picker.Item label="Hot" value="hot" />
+                <Picker.Item label="New" value="new" />
+            </Picker>
+            <TouchableOpacity onPress={logOut}>
+                <Icon
+                    name="log-out"
+                    size={20}
+                    color="black"
+                    style={{ marginRight: 15 }}
+                />
+            </TouchableOpacity>
+        </View>
+    );
+}
+
+function BackButton() {
+    const navigation = useNavigation();
+    return (
+        <TouchableOpacity
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 50,
+            }}
+            onPress={() => {
+                navigation.pop();
+                store.dispatch({ type: "RESET_PROFILE" });
+            }}
+        >
+            <Icon
+                name="corner-up-left"
+                size={20}
+                color="black"
+                style={{ marginLeft: 15 }}
+            />
+        </TouchableOpacity>
+    );
+}
+
 export default function AuthNavigator() {
     const [initializing, setInitializing] = useState(true);
     const [user, setUser] = useState(null);
@@ -68,15 +140,6 @@ export default function AuthNavigator() {
             setUser(null);
         }
         if (initializing) setInitializing(false);
-    }
-
-    async function logOut() {
-        console.log("signing out");
-        try {
-            await firebase.auth().signOut();
-        } catch (e) {
-            console.error(e);
-        }
     }
 
     useEffect(() => {
@@ -105,16 +168,22 @@ export default function AuthNavigator() {
                                 fontWeight: "bold",
                             },
                             headerTitleAlign: "center",
-                            headerRight: () => (
-                                <TouchableOpacity onPress={logOut}>
-                                    <Icon
-                                        name="log-out"
-                                        size={20}
-                                        color="black"
-                                        style={{ marginRight: 10, marginLeft: 5 }}
-                                    />
-                                </TouchableOpacity>
-                            ),
+                            headerRight: () => <HeaderRight />,
+                            headerLeft: () => <ProfileButton />,
+                        }}
+                    />
+                    <Stack.Screen
+                        name="Profile"
+                        component={Profile}
+                        options={{
+                            headerStyle: {
+                                backgroundColor: "#f4f3f1",
+                            },
+                            headerTitleStyle: {
+                                fontWeight: "bold",
+                            },
+                            headerTitleAlign: "center",
+                            headerLeft: () => <BackButton />,
                         }}
                     />
                 </Stack.Navigator>

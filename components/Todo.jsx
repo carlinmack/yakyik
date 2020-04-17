@@ -51,9 +51,10 @@ export default connect(mapStateToProps, mapDispatchToProps)(Todo);
 
 const styles = StyleSheet.create({
     container: {
+        backgroundColor: "#eeecea",
         flexDirection: "row",
-        borderColor: "#aaaaaa",
-        borderBottomWidth: 1,
+        borderColor: "#e2e0dc",
+        borderBottomWidth: 2,
         alignItems: "center",
         minHeight: 60,
         paddingTop: 5,

@@ -32,7 +32,10 @@ export function getTodos() {
 
                     let todos = doc
                         .data()
-                        .todos.filter((item) => item["deleted"] === false);
+                        .todos.filter((item) => item["deleted"] === false)
+                        .sort(function (a, b) {
+                            return b.timestamp - a.timestamp;
+                        });
 
                     dispatch({ type: "GET_TODOS", todos: todos });
                 } else {
@@ -48,7 +51,11 @@ export function getTodos() {
 
 export function updateTodos(newTodos) {
     return (dispatch, getState) => {
-        let todos = newTodos.filter((item) => item["deleted"] === false);
+        let todos = newTodos
+            .filter((item) => item["deleted"] === false)
+            .sort(function (a, b) {
+                return b.timestamp - a.timestamp;
+            });
 
         dispatch({ type: "GET_TODOS", todos: todos });
     };
@@ -57,22 +64,21 @@ export function updateTodos(newTodos) {
 export function addTodo() {
     return (dispatch, getState) => {
         let user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
-        let userRef = user.collection("todos");
         let text = getState().currentText;
 
         if (text.length > 0) {
             user.update({
                 todos: firebase.firestore.FieldValue.arrayUnion({
-                    text: getState().currentText,
+                    text: text,
                     checked: false,
                     deleted: false,
                     index: getState().counter,
                     likes: 0,
                     username: getState().username,
+                    timestamp: firebase.firestore.Timestamp.now().seconds,
                 }),
                 counter: firebase.firestore.FieldValue.increment(1),
             }).then(() => {
-                console.log("harry ");
                 dispatch({ type: "ADD_TODO" });
             });
         }
@@ -188,24 +194,105 @@ export function loginFacebook(token, user) {
     };
 }
 
-export function logIn() {
-    console.log("signing in 1");
-    return async (dispatch) => {
-        console.log("signing in 2");
-        try {
-            await firebase.auth().signInAnonymously();
-            dispatch({ type: "LOGIN" });
-        } catch (e) {
-            switch (e.code) {
-                case "auth/operation-not-allowed":
-                    console.log("Enable anonymous in your firebase console.");
-                    break;
-                default:
-                    console.log("heheheeheh");
-                    console.error(e);
-                    break;
+export function setUsername() {
+    return async (dispatch, getState) => {
+        if (getState().currentUsername.length > 0) {
+            let users = db.collection("users");
+            console.log("signing in 1");
+            try {
+                users
+                    .doc(getState().currentUsername)
+                    .get()
+                    .then(async (doc) => {
+                        // console.log("doc", doc.data());
+                        if (doc.exists) {
+                            if (doc.data().password) {
+                                console.log("show input");
+                                dispatch({ type: "SHOW_PASSWORD_ENTER" });
+                            }
+                        } else {
+                            await firebase.auth().signInAnonymously();
+                            dispatch({ type: "LOGIN" });
+                        }
+                    });
+            } catch (e) {
+                switch (e.code) {
+                    case "auth/operation-not-allowed":
+                        console.log("Enable anonymous in your firebase console.");
+                        break;
+                    default:
+                        console.log("heheheeheh");
+                        console.error(e);
+                        break;
+                }
             }
+            return "done";
+        } else {
+            alert("Please enter a username");
         }
-        return "done";
+    };
+}
+
+export function setPassword() {
+    return async (dispatch, getState) => {
+        if (getState().currentPassword.length > 0) {
+            try {
+                let users = db.collection("users");
+                users.doc(getState().username).set({
+                    password: getState().currentPassword,
+                });
+                dispatch({ type: "SET_PASSWORD" });
+            } catch (e) {
+                switch (e.code) {
+                    case "auth/operation-not-allowed":
+                        console.log("Enable anonymous in your firebase console.");
+                        break;
+                    default:
+                        console.log("heheheeheh");
+                        console.error(e);
+                        break;
+                }
+            }
+            return "done";
+        } else {
+            alert("Please enter a password");
+        }
+    };
+}
+export function checkPassword() {
+    return async (dispatch, getState) => {
+        if (getState().currentPassword.length > 0) {
+            let users = db.collection("users");
+            try {
+                users
+                    .doc(getState().currentUsername)
+                    .get()
+                    .then(async (doc) => {
+                        // console.log("doc", doc.data());
+                        if (doc.exists && doc.data().password) {
+                            if (getState().currentPassword == doc.data().password) {
+                                await firebase.auth().signInAnonymously();
+                                dispatch({ type: "LOGIN" });
+                            }
+                        } else {
+                            await firebase.auth().signInAnonymously();
+                            dispatch({ type: "LOGIN" });
+                        }
+                    });
+            } catch (e) {
+                switch (e.code) {
+                    case "auth/operation-not-allowed":
+                        console.log("Enable anonymous in your firebase console.");
+                        break;
+                    default:
+                        console.log("heheheeheh");
+                        console.error(e);
+                        break;
+                }
+            }
+            return "done";
+        } else {
+            alert("Please enter a password");
+        }
     };
 }
