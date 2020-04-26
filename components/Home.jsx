@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Picker, TouchableOpacity } from "react-native";
 
 import { connect } from "react-redux";
@@ -12,6 +12,7 @@ import "firebase/firestore";
 import store from "../actions/store";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
+import * as Location from "expo-location";
 
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
@@ -56,6 +57,32 @@ export function Home(props) {
     }
 
     console.log("run Home");
+
+    var db = firebase.firestore();
+
+    const [location, setLocation] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            console.log("ask location");
+            await Location.requestPermissionsAsync();
+
+            console.log("granted location");
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+            console.log("got location");
+            db.collection("users")
+                .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
+                .onSnapshot((doc) => {
+                    store.dispatch(
+                        updateTodos(doc.data().todos, {
+                            longitude: location.coords.longitude,
+                            latitude: location.coords.latitude,
+                        })
+                    );
+                });
+        })();
+    }, []);
 
     return (
         <View style={[styles.container, { backgroundColor: background_color }]}>
@@ -114,6 +141,7 @@ function HeaderRight({ color }) {
             >
                 <Picker.Item label="Hot" value="hot" />
                 <Picker.Item label="New" value="new" />
+                <Picker.Item label="Nearby" value="nearby" />
             </Picker>
             <TouchableOpacity onPress={logOut}>
                 <Icon
@@ -144,15 +172,9 @@ export default connect(mapStateToProps, mapDispatchToProps)(Home);
 
 store.dispatch(getTodos());
 
-var db = firebase.firestore();
-
-db.collection("users")
-    .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
-    .onSnapshot((doc) => {
-        store.dispatch(updateTodos(doc.data().todos));
-    });
-
-db.collection("users")
+firebase
+    .firestore()
+    .collection("users")
     .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
     .onSnapshot((newCounter) => {
         store.dispatch({ type: "UPDATE_COUNTER", counter: newCounter.data().counter });

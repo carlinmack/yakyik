@@ -40,11 +40,11 @@ export function LogIn(props) {
                 style={
                     props.showPasswordEnterBool
                         ? styles.textInputContainer
-                        : { display: "none" }
+                        : { display: "none", backgroundColor: input_background }
                 }
             >
                 <TextInput
-                    style={styles.textInput}
+                    style={[styles.textInput, { color: text_color }]}
                     placeholder="Password"
                     placeholderTextColor="#abbabb"
                     value={props.currentPassword}

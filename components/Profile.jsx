@@ -1,4 +1,5 @@
 import React from "react";
+
 import {
     StyleSheet,
     View,
@@ -17,7 +18,7 @@ import {
     toggleColorScheme,
 } from "../actions/middleware";
 
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 
 export function Profile(props) {
@@ -73,7 +74,8 @@ export function Profile(props) {
                 <View
                     style={{
                         flexDirection: "column",
-                        height: 450,
+                        maxHeight: 450,
+                        minHeight: 200,
                         justifyContent: "space-evenly",
                     }}
                 >

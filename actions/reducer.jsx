@@ -22,6 +22,7 @@ const initialState = {
             button: "#f4f3f1",
             todo_background: "#eeecea",
             todo_border: "#e2e0dc",
+            description_color: "#888",
         },
         dark: {
             background: "#383633",
@@ -29,10 +30,11 @@ const initialState = {
             button: "#484643",
             todo_background: "#3e3c3a",
             todo_border: "#32302c",
+            description_color: "#888",
         },
     },
     colorState: new Animated.Value(0),
-    colorScheme: "dark",
+    colorScheme: "light",
 };
 
 const reducer = (state = initialState, action) => {
@@ -56,12 +58,10 @@ const reducer = (state = initialState, action) => {
         case "ADD_TODO":
             console.log("add ");
             if (state.currentText.length > 0) {
-                let newState = {
+                return {
                     ...state,
                     currentText: "",
                 };
-
-                return newState;
             }
             return state;
         case "UPDATE_TODO":
@@ -74,7 +74,7 @@ const reducer = (state = initialState, action) => {
             console.log("updPAS ");
             return { ...state, currentPassword: action.text };
         case "UPDATE_COUNTER":
-            console.log("updcou ");
+            // console.log("updcou ");
             // console.log(action.counter);
             return { ...state, counter: action.counter };
         case "CHECK_TODO":
@@ -150,21 +150,32 @@ const reducer = (state = initialState, action) => {
                 // console.log("hello");
                 todos = state.todos.slice().sort(function (a, b) {
                     let now = new Date().getTime();
-                    let bTime = now - b.timestamp;
-                    let aTime = now - a.timestamp;
-                    let arank;
-                    let brank;
+                    str = now.toString();
+                    str = str.slice(0, -3);
+                    now = parseInt(str);
+
+                    let bTime = now - b.timestamp - 900000;
+                    let aTime = now - a.timestamp - 900000;
+                    console.log(now, a.timestamp, aTime, Math.log(aTime));
+                    let aRank;
+                    let bRank;
                     if (a.likes) {
-                        arank = a.likes + Math.log(aTime);
+                        aRank = a.likes + Math.log(aTime);
                     } else {
-                        arank = aTime;
+                        aRank = aTime;
                     }
                     if (b.likes) {
-                        brank = b.likes + Math.log(bTime);
+                        bRank = b.likes + Math.log(bTime);
                     } else {
-                        brank = bTime;
+                        bRank = bTime;
                     }
-                    return brank - arank;
+                    return bRank - aRank;
+                });
+                // console.log(todos);
+            } else if (action.sort === "nearby") {
+                // console.log("hello");
+                todos = state.todos.slice().sort(function (a, b) {
+                    return a.distance - b.distance;
                 });
                 // console.log(todos);
             }

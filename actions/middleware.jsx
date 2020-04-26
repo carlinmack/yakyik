@@ -1,7 +1,7 @@
 import * as firebase from "firebase";
 import "firebase/firestore";
 import { Animated, StatusBar } from "react-native";
-
+import { convertDistance, getDistance } from "geolib";
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
     authDomain: "mobile-app-dev-4afcb.firebaseapp.com",
@@ -50,33 +50,46 @@ export function getTodos() {
     };
 }
 
-export function updateTodos(newTodos) {
+export function updateTodos(newTodos, { latitude, longitude }) {
+    console.log("updTodos");
     return (dispatch, getState) => {
         let todos = newTodos
             .filter((item) => item["deleted"] === false)
             .sort(function (a, b) {
                 return b.timestamp - a.timestamp;
+            })
+            .map((item) => {
+                item.distance = Math.round(
+                    convertDistance(
+                        getDistance(
+                            { latitude: item.latitude, longitude: item.longitude },
+                            { latitude: latitude, longitude: longitude }
+                        ),
+                        "ft"
+                    )
+                );
+                return item;
             });
-
         dispatch({ type: "GET_TODOS", todos: todos });
     };
 }
 
-export function addTodo() {
+export function addTodo({ latitude, longitude }) {
     return (dispatch, getState) => {
         let user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
         let text = getState().currentText;
-
+        console.log(latitude, longitude);
         if (text.length > 0) {
             user.update({
                 todos: firebase.firestore.FieldValue.arrayUnion({
                     text: text,
-                    checked: false,
                     deleted: false,
                     index: getState().counter,
                     likes: 0,
                     username: getState().username,
                     timestamp: firebase.firestore.Timestamp.now().seconds,
+                    latitude: latitude,
+                    longitude: longitude,
                 }),
                 counter: firebase.firestore.FieldValue.increment(1),
             }).then(() => {

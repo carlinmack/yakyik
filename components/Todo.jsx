@@ -9,7 +9,7 @@ export function Todo(props) {
     let background = props.colorSchemes[props.colorScheme].todo_background;
     let border = props.colorSchemes[props.colorScheme].todo_border;
     let text_color = props.colorSchemes[props.colorScheme].text;
-
+    let description_color = props.colorSchemes[props.colorScheme].description_color;
     return (
         <View
             style={[
@@ -23,6 +23,15 @@ export function Todo(props) {
                 </Text>
                 <Text style={[styles.listText, { color: text_color }]}>
                     {props.text}
+                </Text>
+                <Text
+                    style={
+                        props.distance !== "undefined"
+                            ? { color: description_color, paddingLeft: 30 }
+                            : { display: "none" }
+                    }
+                >
+                    {props.distance}ft away
                 </Text>
             </View>
             <View

@@ -17,6 +17,7 @@ export function TodoList(props) {
                         key={item.index}
                         checked={item.checked}
                         likes={item.likes}
+                        distance={item.distance}
                     />
                 ))
             ) : (

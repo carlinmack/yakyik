@@ -1,12 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { StyleSheet, TouchableOpacity, View, TextInput, Text } from "react-native";
 import Icon from "react-native-vector-icons/Feather";
 import { connect } from "react-redux";
 import { addTodo } from "../actions/middleware";
 
+import * as Location from "expo-location";
+
 export function TodoInput(props) {
     let text_color = props.colorSchemes[props.colorScheme].text;
     let input_background = props.colorSchemes[props.colorScheme].button;
+    const [location, setLocation] = useState(null);
+
+    useEffect(() => {
+        (async () => {
+            await Location.requestPermissionsAsync();
+
+            let location = await Location.getCurrentPositionAsync({});
+            setLocation(location);
+        })();
+    }, []);
     return (
         <View style={[styles.container, { backgroundColor: input_background }]}>
             <TextInput
@@ -19,7 +31,14 @@ export function TodoInput(props) {
                 }}
                 value={props.currentText}
             />
-            <TouchableOpacity onPress={props.addTodo}>
+            <TouchableOpacity
+                onPress={() => {
+                    props.addTodo({
+                        longitude: location.coords.longitude,
+                        latitude: location.coords.latitude,
+                    });
+                }}
+            >
                 <Icon
                     name="send"
                     size={30}
@@ -42,7 +61,7 @@ function mapStateToProps(state) {
 
 function mapDispatchToProps(dispatch) {
     return {
-        addTodo: () => dispatch(addTodo()),
+        addTodo: (location) => dispatch(addTodo(location)),
         updateTodo: (text) => dispatch({ type: "UPDATE_TODO", text: text }),
     };
 }

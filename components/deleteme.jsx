@@ -1,6 +1,5 @@
-import React, { useState, useEffect, createContext } from "react";
-import { Text, View, Button, Animated, StyleSheet } from "react-native";
-import { useColorScheme } from "react-native-appearance";
+import React, { useState } from "react";
+import { Button, Animated, StyleSheet } from "react-native";
 
 const colorSchemes = {
     light: {
