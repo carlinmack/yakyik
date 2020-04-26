@@ -1,11 +1,11 @@
-# Sample Snack app
+# YakYik
 
-Open the `App.js` file to start writing some code. You can preview the changes directly on your phone or tablet by clicking the **Run** button or use the simulator by clicking **Tap to Play**. When you're done, click **Save** and share the link!
+A Yikyak clone in React with Redux for [Mobile App Development](https://danielggraham.com/mobile-development-in-react/) at the University of Virginia. I chose to make this as I think anonymity is a fun aspect of online communication that is being lost.
 
-When you're ready to see everything that Expo provides (or if you want to use your own editor) you can **Export** your project and use it with [expo-cli](https://docs.expo.io/versions/latest/introduction/installation.html).
+This app allows you to choose any username and password protect it if you want. There is no limit to the number of usernames a user can use. The users location is used to show how far away other users are. The feed can be sorted by new, hot and nearby.
 
-Projects created in Snack are publicly available, so you can easily share the link to this project via link, or embed it on a web page with the **Embed** button.
+![screenshot](./assets/screenshot.png)
 
-If you're having problems, you can tweet to us [@expo](https://twitter.com/expo) or ask in our [forums](https://forums.expo.io).
+[▶ Video](https://youtu.be/hz4Sz113V8U)
 
-Snack is Open Source. You can find the code on the [GitHub repo](https://github.com/expo/snack-web).
+[Expo](https://expo.io/@ckm8gz/yakyik)
