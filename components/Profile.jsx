@@ -6,6 +6,7 @@ import {
     TextInput,
     Text,
     Animated,
+    Switch,
 } from "react-native";
 
 import { connect } from "react-redux";
@@ -111,15 +112,26 @@ export function Profile(props) {
                             props.showPasswordInputButton
                                 ? styles.button
                                 : { display: "none" },
-                            { backgroundColor: background_button },
+                            {
+                                backgroundColor: background_button,
+                                flexDirection: "row",
+                            },
                         ]}
                         onPress={props.toggleColorScheme}
                     >
                         <Animated.Text
                             style={[styles.buttonText, { color: text_color }]}
                         >
-                            Toggle Color Scheme
+                            Toggle {props.colorScheme == "dark" ? "Light" : "Dark"} Mode
                         </Animated.Text>
+                        <Switch
+                            trackColor={{ false: "#CCB5DB", true: "#81b0ff" }}
+                            thumbColor={
+                                props.colorScheme == "dark" ? "#f5dd4b" : "#767577"
+                            }
+                            onValueChange={props.toggleColorScheme}
+                            value={props.colorScheme == "dark"}
+                        />
                     </AnimatedButton>
                 </View>
                 <View
@@ -230,6 +242,7 @@ function mapStateToProps(state) {
         currentPassword: state.currentPassword,
         colorState: state.colorState,
         colorSchemes: state.colorSchemes,
+        colorScheme: state.colorScheme,
     };
 }
 
