@@ -5,10 +5,12 @@ import { connect } from "react-redux";
 import { addTodo } from "../actions/middleware";
 
 export function TodoInput(props) {
+    let text_color = props.colorSchemes[props.colorScheme].text;
+    let input_background = props.colorSchemes[props.colorScheme].button;
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: input_background }]}>
             <TextInput
-                style={styles.textInput}
+                style={[styles.textInput, { color: text_color }]}
                 multiline={true}
                 placeholder="New Post"
                 placeholderTextColor="#abbabb"
@@ -22,7 +24,7 @@ export function TodoInput(props) {
                     name="send"
                     size={30}
                     color="black"
-                    style={{ marginRight: 10, marginLeft: 5 }}
+                    style={{ marginRight: 10, marginLeft: 5, color: text_color }}
                 />
             </TouchableOpacity>
         </View>
@@ -33,6 +35,8 @@ function mapStateToProps(state) {
     return {
         counter: state.counter,
         currentText: state.currentText,
+        colorSchemes: state.colorSchemes,
+        colorScheme: state.colorScheme,
     };
 }
 

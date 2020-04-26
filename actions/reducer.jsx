@@ -1,6 +1,7 @@
 import { useState } from "react";
 import * as firebase from "firebase";
 import "firebase/firestore";
+import { Animated } from "react-native";
 
 const initialState = {
     currentUsername: "",
@@ -14,6 +15,24 @@ const initialState = {
     showPasswordInputButton: true,
     showUserInputButton: true,
     sort: "new",
+    colorSchemes: {
+        light: {
+            background: "#e8e6e3",
+            text: "#333",
+            button: "#f4f3f1",
+            todo_background: "#eeecea",
+            todo_border: "#e2e0dc",
+        },
+        dark: {
+            background: "#383633",
+            text: "#fff",
+            button: "#484643",
+            todo_background: "#3e3c3a",
+            todo_border: "#32302c",
+        },
+    },
+    colorState: new Animated.Value(0),
+    colorScheme: "dark",
 };
 
 const reducer = (state = initialState, action) => {
@@ -172,6 +191,17 @@ const reducer = (state = initialState, action) => {
             return {
                 ...state,
                 todos: likedTodos,
+            };
+        case "TOGGLE_COLOR_SCHEME":
+            if (state.colorScheme == "dark") {
+                return {
+                    ...state,
+                    colorScheme: "light",
+                };
+            }
+            return {
+                ...state,
+                colorScheme: "dark",
             };
     }
     return state;

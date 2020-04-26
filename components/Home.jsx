@@ -10,6 +10,8 @@ import { updateTodos, getTodos } from "../actions/middleware";
 import * as firebase from "firebase";
 import "firebase/firestore";
 import store from "../actions/store";
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Feather";
 
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
@@ -33,6 +35,16 @@ export function Home(props) {
     // }, 2000);
 
     //
+    let background_color = props.colorSchemes[props.colorScheme].background;
+    let text_color = props.colorSchemes[props.colorScheme].text;
+    props.navigation.setOptions({
+        headerStyle: {
+            backgroundColor: background_color,
+        },
+        headerTitleStyle: { color: text_color },
+        headerRight: () => <HeaderRight color={text_color} />,
+        headerLeft: () => <ProfileButton color={text_color} />,
+    });
 
     async function logOut() {
         console.log("signing out");
@@ -46,7 +58,7 @@ export function Home(props) {
     console.log("run Home");
 
     return (
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: background_color }]}>
             <TodoList></TodoList>
             <TodoInput></TodoInput>
         </View>
@@ -61,9 +73,64 @@ export function Home(props) {
 //     props.login(token)
 // }
 
+function ProfileButton({ color }) {
+    const navigation = useNavigation();
+    return (
+        <TouchableOpacity
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 50,
+            }}
+            onPress={() => navigation.push("Profile")}
+        >
+            <Icon name="user" size={20} style={{ marginLeft: 15, color: color }} />
+        </TouchableOpacity>
+    );
+}
+
+function HeaderRight({ color }) {
+    async function logOut() {
+        console.log("signing out");
+        try {
+            await firebase.auth().signOut();
+        } catch (e) {
+            console.error(e);
+        }
+    }
+
+    const [selectedSort, setSelectedSort] = useState("new");
+
+    return (
+        <View style={{ flexDirection: "row", alignItems: "center" }}>
+            <Picker
+                selectedValue={selectedSort}
+                style={{ height: 50, width: 100, color: color }}
+                onValueChange={(itemValue, itemIndex) => {
+                    store.dispatch({ type: "SET_SORT", sort: itemValue });
+                    setSelectedSort(itemValue);
+                }}
+                mode="dropdown"
+            >
+                <Picker.Item label="Hot" value="hot" />
+                <Picker.Item label="New" value="new" />
+            </Picker>
+            <TouchableOpacity onPress={logOut}>
+                <Icon
+                    name="log-out"
+                    size={20}
+                    style={{ marginRight: 15, color: color }}
+                />
+            </TouchableOpacity>
+        </View>
+    );
+}
+
 function mapStateToProps(state) {
     return {
         todos: state.todos,
+        colorSchemes: state.colorSchemes,
+        colorScheme: state.colorScheme,
     };
 }
 

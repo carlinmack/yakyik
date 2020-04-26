@@ -6,11 +6,24 @@ import { setChecked } from "../actions/middleware";
 import { like } from "../actions/middleware";
 
 export function Todo(props) {
+    let background = props.colorSchemes[props.colorScheme].todo_background;
+    let border = props.colorSchemes[props.colorScheme].todo_border;
+    let text_color = props.colorSchemes[props.colorScheme].text;
+
     return (
-        <View style={styles.container}>
+        <View
+            style={[
+                styles.container,
+                { backgroundColor: background, borderBottomColor: border },
+            ]}
+        >
             <View style={styles.listItem}>
-                <Text style={styles.listUser}>{props.postUsername}</Text>
-                <Text style={styles.listText}>{props.text}</Text>
+                <Text style={[styles.listUser, { color: text_color }]}>
+                    {props.postUsername}
+                </Text>
+                <Text style={[styles.listText, { color: text_color }]}>
+                    {props.text}
+                </Text>
             </View>
             <View
                 style={{
@@ -27,14 +40,17 @@ export function Todo(props) {
                         props.like(props.index);
                     }}
                 />
-                <Text>{props.likes}</Text>
+                <Text style={{ color: text_color }}>{props.likes}</Text>
             </View>
         </View>
     );
 }
 
 function mapStateToProps(state) {
-    return state;
+    return {
+        colorSchemes: state.colorSchemes,
+        colorScheme: state.colorScheme,
+    };
 }
 
 function mapDispatchToProps(dispatch) {

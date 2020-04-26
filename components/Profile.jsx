@@ -1,105 +1,219 @@
 import React from "react";
-import { StyleSheet, View, TouchableOpacity, TextInput, Text } from "react-native";
-import * as firebase from "firebase";
+import {
+    StyleSheet,
+    View,
+    TouchableOpacity,
+    TextInput,
+    Text,
+    Animated,
+} from "react-native";
 
 import { connect } from "react-redux";
-import { setUsername, setPassword, checkPassword } from "../actions/middleware";
+import {
+    setUsername,
+    setPassword,
+    checkPassword,
+    toggleColorScheme,
+} from "../actions/middleware";
+
+import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Feather";
 
 export function Profile(props) {
     console.log("profile");
     console.log(props.showPasswordInputButton);
+
+    let background_color = props.colorState.interpolate({
+        inputRange: [0, 1],
+        outputRange: [
+            props.colorSchemes.dark.background,
+            props.colorSchemes.light.background,
+        ],
+    });
+
+    let text_color = props.colorState.interpolate({
+        inputRange: [0, 1],
+        outputRange: [props.colorSchemes.dark.text, props.colorSchemes.light.text],
+    });
+
+    let background_button = props.colorState.interpolate({
+        inputRange: [0, 1],
+        outputRange: [props.colorSchemes.dark.button, props.colorSchemes.light.button],
+    });
+
+    const AnimatedButton = Animated.createAnimatedComponent(TouchableOpacity);
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>{props.username}</Text>
-            <View
+        <View style={{ flexDirection: "column", flex: 1 }}>
+            <Animated.View
                 style={{
+                    backgroundColor: background_button,
                     flexDirection: "row",
-                    width: "100%",
-                    justifyContent: "space-evenly",
+                    height: 85,
+                    justifyContent: "space-between",
+                    alignItems: "flex-end",
+                    paddingBottom: 15,
                 }}
             >
-                <TouchableOpacity
-                    style={
-                        props.showUserInputButton ? styles.button : { display: "none" }
-                    }
-                    onPress={props.showUserInput}
+                <BackButton color={text_color} />
+                <Animated.Text
+                    style={{ fontWeight: "bold", fontSize: 20, color: text_color }}
                 >
-                    <Text style={styles.buttonText}>Change Username</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
+                    Profile
+                </Animated.Text>
+                <View style={{ width: 50 }} />
+            </Animated.View>
+            <Animated.View
+                style={[styles.container, { backgroundColor: background_color }]}
+            >
+                <Animated.Text style={[styles.header, { color: text_color }]}>
+                    {props.username}
+                </Animated.Text>
+                <View
+                    style={{
+                        flexDirection: "column",
+                        height: 450,
+                        justifyContent: "space-evenly",
+                    }}
+                >
+                    <AnimatedButton
+                        style={[
+                            props.showUserInputButton
+                                ? styles.button
+                                : { display: "none" },
+                            { backgroundColor: background_button },
+                        ]}
+                        onPress={props.showUserInput}
+                    >
+                        <Animated.Text
+                            style={[styles.buttonText, { color: text_color }]}
+                        >
+                            Change Username
+                        </Animated.Text>
+                    </AnimatedButton>
+                    <AnimatedButton
+                        style={[
+                            props.showPasswordInputButton
+                                ? styles.button
+                                : { display: "none" },
+                            { backgroundColor: background_button },
+                        ]}
+                        onPress={props.showPasswordInput}
+                    >
+                        <Animated.Text
+                            style={[styles.buttonText, { color: text_color }]}
+                        >
+                            Set Password
+                        </Animated.Text>
+                    </AnimatedButton>
+                    <AnimatedButton
+                        style={[
+                            props.showPasswordInputButton
+                                ? styles.button
+                                : { display: "none" },
+                            { backgroundColor: background_button },
+                        ]}
+                        onPress={props.toggleColorScheme}
+                    >
+                        <Animated.Text
+                            style={[styles.buttonText, { color: text_color }]}
+                        >
+                            Toggle Color Scheme
+                        </Animated.Text>
+                    </AnimatedButton>
+                </View>
+                <View
                     style={
-                        props.showPasswordInputButton
-                            ? styles.button
+                        props.showUserInputBool
+                            ? styles.textInputContainer
                             : { display: "none" }
                     }
-                    onPress={props.showPasswordInput}
                 >
-                    <Text style={styles.buttonText}>Set Password</Text>
-                </TouchableOpacity>
-            </View>
-            <View
-                style={
-                    props.showUserInputBool
-                        ? styles.textInputContainer
-                        : { display: "none" }
-                }
-            >
-                <TextInput
-                    style={styles.textInput}
-                    placeholder="Username"
-                    placeholderTextColor="#abbabb"
-                    value={props.currentUsername}
-                    onChangeText={(value) => {
-                        props.updateUsername(value);
-                    }}
-                />
-                <TouchableOpacity style={styles.button} onPress={props.setUsername}>
-                    <Text style={styles.buttonText}>Change</Text>
-                </TouchableOpacity>
-            </View>
-            <View
-                style={
-                    props.showPasswordInputBool
-                        ? styles.textInputContainer
-                        : { display: "none" }
-                }
-            >
-                <TextInput
-                    style={styles.textInput}
-                    placeholder="Password"
-                    placeholderTextColor="#abbabb"
-                    value={props.currentPassword}
-                    onChangeText={(value) => {
-                        props.updatePassword(value);
-                    }}
-                    secureTextEntry={true}
-                />
-                <TouchableOpacity style={styles.button} onPress={props.setPassword}>
-                    <Text style={styles.buttonText}>Set</Text>
-                </TouchableOpacity>
-            </View>
-            <View
-                style={
-                    props.showPasswordEnterBool
-                        ? styles.textInputContainer
-                        : { display: "none" }
-                }
-            >
-                <TextInput
-                    style={styles.textInput}
-                    placeholder="Password"
-                    placeholderTextColor="#abbabb"
-                    value={props.currentPassword}
-                    onChangeText={(value) => {
-                        props.updatePassword(value);
-                    }}
-                    secureTextEntry={true}
-                />
-                <TouchableOpacity style={styles.button} onPress={props.checkPassword}>
-                    <Text style={styles.buttonText}>Enter</Text>
-                </TouchableOpacity>
-            </View>
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Username"
+                        placeholderTextColor="#abbabb"
+                        value={props.currentUsername}
+                        onChangeText={(value) => {
+                            props.updateUsername(value);
+                        }}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={props.setUsername}>
+                        <Text style={styles.buttonText}>Change</Text>
+                    </TouchableOpacity>
+                </View>
+                <View
+                    style={
+                        props.showPasswordInputBool
+                            ? styles.textInputContainer
+                            : { display: "none" }
+                    }
+                >
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Password"
+                        placeholderTextColor="#abbabb"
+                        value={props.currentPassword}
+                        onChangeText={(value) => {
+                            props.updatePassword(value);
+                        }}
+                        secureTextEntry={true}
+                    />
+                    <TouchableOpacity style={styles.button} onPress={props.setPassword}>
+                        <Text style={styles.buttonText}>Set</Text>
+                    </TouchableOpacity>
+                </View>
+                <View
+                    style={
+                        props.showPasswordEnterBool
+                            ? styles.textInputContainer
+                            : { display: "none" }
+                    }
+                >
+                    <TextInput
+                        style={styles.textInput}
+                        placeholder="Password"
+                        placeholderTextColor="#abbabb"
+                        value={props.currentPassword}
+                        onChangeText={(value) => {
+                            props.updatePassword(value);
+                        }}
+                        secureTextEntry={true}
+                    />
+                    <TouchableOpacity
+                        style={styles.button}
+                        onPress={props.checkPassword}
+                    >
+                        <Text style={styles.buttonText}>Enter</Text>
+                    </TouchableOpacity>
+                </View>
+            </Animated.View>
         </View>
+    );
+}
+
+function BackButton({ color, resetProfile }) {
+    const navigation = useNavigation();
+    const AnimatedIcon = Animated.createAnimatedComponent(Icon);
+
+    return (
+        <TouchableOpacity
+            style={{
+                justifyContent: "center",
+                alignItems: "center",
+                width: 50,
+            }}
+            onPress={() => {
+                navigation.pop();
+                resetProfile;
+            }}
+        >
+            <AnimatedIcon
+                name="corner-up-left"
+                size={20}
+                style={{ marginLeft: 15, color: color }}
+            />
+        </TouchableOpacity>
     );
 }
 
@@ -114,6 +228,8 @@ function mapStateToProps(state) {
         showPasswordEnterBool: state.showPasswordEnter,
         currentUsername: state.currentUsername,
         currentPassword: state.currentPassword,
+        colorState: state.colorState,
+        colorSchemes: state.colorSchemes,
     };
 }
 
@@ -126,6 +242,8 @@ function mapDispatchToProps(dispatch) {
         showPasswordInput: () => dispatch({ type: "SHOW_PASSWORD_INPUT" }),
         updateUsername: (text) => dispatch({ type: "UPDATE_USERNAME", text: text }),
         updatePassword: (text) => dispatch({ type: "UPDATE_PASSWORD", text: text }),
+        toggleColorScheme: () => dispatch(toggleColorScheme()),
+        resetProfile: () => dispatch({ type: "RESET_PROFILE" }),
     };
 }
 
@@ -148,6 +266,7 @@ const styles = StyleSheet.create({
         paddingLeft: 10,
         paddingRight: 10,
         borderRadius: 5,
+        alignSelf: "center",
     },
     buttonText: {
         fontSize: 17.5,

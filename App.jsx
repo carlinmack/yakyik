@@ -176,14 +176,7 @@ export default function AuthNavigator() {
                         name="Profile"
                         component={Profile}
                         options={{
-                            headerStyle: {
-                                backgroundColor: "#f4f3f1",
-                            },
-                            headerTitleStyle: {
-                                fontWeight: "bold",
-                            },
-                            headerTitleAlign: "center",
-                            headerLeft: () => <BackButton />,
+                            headerShown: false,
                         }}
                     />
                 </Stack.Navigator>

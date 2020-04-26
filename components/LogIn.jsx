@@ -8,12 +8,22 @@ import { setUsername, checkPassword } from "../actions/middleware";
 
 export function LogIn(props) {
     console.log(props.currentUsername);
+
+    let background_color = props.colorSchemes[props.colorScheme].background;
+    let text_color = props.colorSchemes[props.colorScheme].text;
+    let input_background = props.colorSchemes[props.colorScheme].button;
+
     return (
-        <View style={styles.container}>
-            <Text style={styles.header}>YakYik</Text>
-            <View style={styles.textInputContainer}>
+        <View style={[styles.container, { backgroundColor: background_color }]}>
+            <Text style={[styles.header, { color: text_color }]}>YakYik</Text>
+            <View
+                style={[
+                    styles.textInputContainer,
+                    { backgroundColor: input_background },
+                ]}
+            >
                 <TextInput
-                    style={styles.textInput}
+                    style={[styles.textInput, { color: text_color }]}
                     placeholder="Username"
                     placeholderTextColor="#abbabb"
                     onChangeText={(value) => {
@@ -21,7 +31,9 @@ export function LogIn(props) {
                     }}
                 />
                 <TouchableOpacity onPress={props.setUsername}>
-                    <Text style={styles.buttonText}>Select</Text>
+                    <Text style={[styles.buttonText, { color: text_color }]}>
+                        Select
+                    </Text>
                 </TouchableOpacity>
             </View>
             <View
@@ -42,7 +54,9 @@ export function LogIn(props) {
                     secureTextEntry={true}
                 />
                 <TouchableOpacity style={styles.button} onPress={props.checkPassword}>
-                    <Text style={styles.buttonText}>Enter</Text>
+                    <Text style={[styles.buttonText, { color: text_color }]}>
+                        Enter
+                    </Text>
                 </TouchableOpacity>
             </View>
         </View>
@@ -59,7 +73,8 @@ function mapStateToProps(state) {
         showPasswordInputButton: state.showPasswordInputButton,
         showPasswordEnterBool: state.showPasswordEnter,
         currentUsername: state.currentUsername,
-        currentPassword: state.currentPassword,
+        colorSchemes: state.colorSchemes,
+        colorScheme: state.colorScheme,
     };
 }
 

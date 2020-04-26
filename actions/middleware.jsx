@@ -1,5 +1,6 @@
 import * as firebase from "firebase";
 import "firebase/firestore";
+import { Animated, StatusBar } from "react-native";
 
 var firebaseConfig = {
     apiKey: "AIzaSyCiORa1Aum5CUWIE_ht7hHpWb8J_iRHLmU",
@@ -259,6 +260,7 @@ export function setPassword() {
         }
     };
 }
+
 export function checkPassword() {
     return async (dispatch, getState) => {
         if (getState().currentPassword.length > 0) {
@@ -294,5 +296,24 @@ export function checkPassword() {
         } else {
             alert("Please enter a password");
         }
+    };
+}
+
+export function toggleColorScheme() {
+    return (dispatch, getState) => {
+        if (getState().colorScheme == "dark") {
+            StatusBar.setBarStyle("dark-content");
+            Animated.timing(getState().colorState, {
+                toValue: 1,
+                duration: 750,
+            }).start();
+        } else {
+            StatusBar.setBarStyle("light-content");
+            Animated.timing(getState().colorState, {
+                toValue: 0,
+                duration: 750,
+            }).start();
+        }
+        dispatch({ type: "TOGGLE_COLOR_SCHEME" });
     };
 }
