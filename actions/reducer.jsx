@@ -40,14 +40,14 @@ const initialState = {
 const reducer = (state = initialState, action) => {
     switch (action.type) {
         case "GET_TODOS":
-            console.log("tod ");
+            // console.log("tod ");
             // console.log(action.todos);
             return {
                 ...state,
                 todos: action.todos,
             };
         case "GET_COUNTER":
-            console.log("cou ");
+            // console.log("cou ");
             // console.log(action.counter);
 
             return {
@@ -56,7 +56,7 @@ const reducer = (state = initialState, action) => {
             };
 
         case "ADD_TODO":
-            console.log("add ");
+            // console.log("add ");
             if (state.currentText.length > 0) {
                 return {
                     ...state,
@@ -65,20 +65,20 @@ const reducer = (state = initialState, action) => {
             }
             return state;
         case "UPDATE_TODO":
-            console.log("updtod ");
+            // console.log("updtod ");
             return { ...state, currentText: action.text };
         case "UPDATE_USERNAME":
-            console.log("updUSR ");
+            // console.log("updUSR ");
             return { ...state, currentUsername: action.text };
         case "UPDATE_PASSWORD":
-            console.log("updPAS ");
+            // console.log("updPAS ");
             return { ...state, currentPassword: action.text };
         case "UPDATE_COUNTER":
             // console.log("updcou ");
             // console.log(action.counter);
             return { ...state, counter: action.counter };
         case "CHECK_TODO":
-            console.log("che ");
+            // console.log("che ");
             let newTodos = state.todos.map((item, index) => {
                 if (item.text !== action.text) {
                     return item;
@@ -106,10 +106,10 @@ const reducer = (state = initialState, action) => {
                 showUserInputButton: !state.showPasswordInputButton,
             };
         case "SHOW_PASSWORD_ENTER":
-            console.log("SHpasENT");
+            // console.log("SHpasENT");
             return { ...state, showPasswordEnter: !state.showPasswordEnter };
         case "RESET_PROFILE":
-            console.log("res");
+            // console.log("res");
             return {
                 ...state,
                 showUserInput: false,
@@ -119,7 +119,7 @@ const reducer = (state = initialState, action) => {
                 showUserInputButton: true,
             };
         case "LOGIN":
-            console.log("log ", state.currentUsername);
+            // console.log("log ", state.currentUsername);
             return {
                 ...state,
                 username: state.currentUsername,
@@ -130,7 +130,7 @@ const reducer = (state = initialState, action) => {
                 showUserInputButton: true,
             };
         case "SET_PASSWORD":
-            console.log(action.text);
+            // console.log(action.text);
             return {
                 ...state,
                 token: action.token,
@@ -156,7 +156,7 @@ const reducer = (state = initialState, action) => {
 
                     let bTime = now - b.timestamp - 900000;
                     let aTime = now - a.timestamp - 900000;
-                    console.log(now, a.timestamp, aTime, Math.log(aTime));
+                    // console.log(now, a.timestamp, aTime, Math.log(aTime));
                     let aRank;
                     let bRank;
                     if (a.likes) {

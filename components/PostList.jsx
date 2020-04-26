@@ -2,15 +2,15 @@ import React from "react";
 import { ScrollView } from "react-native";
 
 import { connect } from "react-redux";
-import Todo from "./Todo";
+import Post from "./Post";
 
-export function TodoList(props) {
+export function PostList(props) {
     // console.log(props.todos[0]);
     return (
         <ScrollView style={{ width: "100%" }}>
             {props.todos ? (
                 props.todos.map((item) => (
-                    <Todo
+                    <Post
                         postUsername={item.username}
                         text={item.text}
                         index={item.index}
@@ -21,7 +21,7 @@ export function TodoList(props) {
                     />
                 ))
             ) : (
-                <Todo />
+                <Post />
             )}
         </ScrollView>
     );
@@ -40,4 +40,4 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoList);
+export default connect(mapStateToProps, mapDispatchToProps)(PostList);

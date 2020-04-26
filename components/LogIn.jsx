@@ -1,13 +1,11 @@
 import React from "react";
 import { StyleSheet, View, TouchableOpacity, TextInput, Text } from "react-native";
-import * as firebase from "firebase";
 
 import { connect } from "react-redux";
-import Todo from "./Todo";
 import { setUsername, checkPassword } from "../actions/middleware";
 
 export function LogIn(props) {
-    console.log(props.currentUsername);
+    // console.log(props.currentUsername);
 
     let background_color = props.colorSchemes[props.colorScheme].background;
     let text_color = props.colorSchemes[props.colorScheme].text;

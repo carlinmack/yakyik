@@ -3,8 +3,8 @@ import { StyleSheet, View, Picker, TouchableOpacity } from "react-native";
 
 import { connect } from "react-redux";
 
-import TodoList from "./TodoList";
-import TodoInput from "./TodoInput";
+import PostList from "./PostList";
+import PostInput from "./PostInput";
 import { updateTodos, getTodos } from "../actions/middleware";
 
 import * as firebase from "firebase";
@@ -48,7 +48,7 @@ export function Home(props) {
     });
 
     async function logOut() {
-        console.log("signing out");
+        // console.log("signing out");
         try {
             await firebase.auth().signOut();
         } catch (e) {
@@ -56,7 +56,7 @@ export function Home(props) {
         }
     }
 
-    console.log("run Home");
+    // console.log("run Home");
 
     var db = firebase.firestore();
 
@@ -64,13 +64,13 @@ export function Home(props) {
 
     useEffect(() => {
         (async () => {
-            console.log("ask location");
+            // console.log("ask location");
             await Location.requestPermissionsAsync();
 
-            console.log("granted location");
+            // console.log("granted location");
             let location = await Location.getCurrentPositionAsync({});
             setLocation(location);
-            console.log("got location");
+            // console.log("got location");
             db.collection("users")
                 .doc("A4vrp1H3bETPYQfpXkURdDEdBo93")
                 .onSnapshot((doc) => {
@@ -86,8 +86,8 @@ export function Home(props) {
 
     return (
         <View style={[styles.container, { backgroundColor: background_color }]}>
-            <TodoList></TodoList>
-            <TodoInput></TodoInput>
+            <PostList></PostList>
+            <PostInput></PostInput>
         </View>
     );
 }
@@ -118,7 +118,7 @@ function ProfileButton({ color }) {
 
 function HeaderRight({ color }) {
     async function logOut() {
-        console.log("signing out");
+        // console.log("signing out");
         try {
             await firebase.auth().signOut();
         } catch (e) {

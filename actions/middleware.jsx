@@ -20,7 +20,7 @@ if (!firebase.apps.length) {
 var db = firebase.firestore();
 
 export function getTodos() {
-    console.log("getTodos prior");
+    // console.log("getTodos prior");
     return (dispatch) => {
         let user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
 
@@ -51,7 +51,7 @@ export function getTodos() {
 }
 
 export function updateTodos(newTodos, { latitude, longitude }) {
-    console.log("updTodos");
+    // console.log("updTodos");
     return (dispatch, getState) => {
         let todos = newTodos
             .filter((item) => item["deleted"] === false)
@@ -78,23 +78,27 @@ export function addTodo({ latitude, longitude }) {
     return (dispatch, getState) => {
         let user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
         let text = getState().currentText;
-        console.log(latitude, longitude);
+        // console.log(latitude, longitude);
         if (text.length > 0) {
-            user.update({
-                todos: firebase.firestore.FieldValue.arrayUnion({
-                    text: text,
-                    deleted: false,
-                    index: getState().counter,
-                    likes: 0,
-                    username: getState().username,
-                    timestamp: firebase.firestore.Timestamp.now().seconds,
-                    latitude: latitude,
-                    longitude: longitude,
-                }),
-                counter: firebase.firestore.FieldValue.increment(1),
-            }).then(() => {
-                dispatch({ type: "ADD_TODO" });
-            });
+            if (getState().username) {
+                user.update({
+                    todos: firebase.firestore.FieldValue.arrayUnion({
+                        text: text,
+                        deleted: false,
+                        index: getState().counter,
+                        likes: 0,
+                        username: getState().username,
+                        timestamp: firebase.firestore.Timestamp.now().seconds,
+                        latitude: latitude,
+                        longitude: longitude,
+                    }),
+                    counter: firebase.firestore.FieldValue.increment(1),
+                }).then(() => {
+                    dispatch({ type: "ADD_TODO" });
+                });
+            } else {
+                alert("Please log out and log in again");
+            }
         }
     };
 }
@@ -147,7 +151,7 @@ export function deleteTodo(text, key) {
 
 export function like(key) {
     return (dispatch, getState) => {
-        console.log("hello", key);
+        // console.log("hello", key);
         const user = db.collection("users").doc("A4vrp1H3bETPYQfpXkURdDEdBo93");
 
         dispatch({ type: "LIKE", key: key });
@@ -181,33 +185,6 @@ export function like(key) {
     };
 }
 
-export function loginFacebook(token, user) {
-    console.log("midlog");
-    return (dispatch) => {
-        console.log(token, user);
-
-        dispatch({
-            type: "LOGIN_FACEBOOK",
-            token: token,
-            loading: false,
-        });
-
-        // db.collection('users').doc(user.uid).get()
-        //     .then(docSnapshot => {
-        //         if (!docSnapshot.exists) {
-        //             console.log('=== Wahey ===')
-        //         }
-        //     });
-
-        // todo.update({
-        //     "deleted": true
-        // }).then(function (docRef) {
-        // }).catch(function (error) {
-        //     console.error("Error removing document: ", error);
-        // });
-    };
-}
-
 export function setUsername() {
     return async (dispatch, getState) => {
         if (getState().currentUsername.length > 0) {
@@ -235,7 +212,6 @@ export function setUsername() {
                         console.log("Enable anonymous in your firebase console.");
                         break;
                     default:
-                        console.log("heheheeheh");
                         console.error(e);
                         break;
                 }

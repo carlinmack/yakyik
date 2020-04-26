@@ -6,7 +6,7 @@ import { addTodo } from "../actions/middleware";
 
 import * as Location from "expo-location";
 
-export function TodoInput(props) {
+export function PostInput(props) {
     let text_color = props.colorSchemes[props.colorScheme].text;
     let input_background = props.colorSchemes[props.colorScheme].button;
     const [location, setLocation] = useState(null);
@@ -66,7 +66,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(TodoInput);
+export default connect(mapStateToProps, mapDispatchToProps)(PostInput);
 
 const styles = StyleSheet.create({
     container: {

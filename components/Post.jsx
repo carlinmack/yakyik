@@ -5,7 +5,7 @@ import { connect } from "react-redux";
 import { setChecked } from "../actions/middleware";
 import { like } from "../actions/middleware";
 
-export function Todo(props) {
+export function Post(props) {
     let background = props.colorSchemes[props.colorScheme].todo_background;
     let border = props.colorSchemes[props.colorScheme].todo_border;
     let text_color = props.colorSchemes[props.colorScheme].text;
@@ -72,7 +72,7 @@ function mapDispatchToProps(dispatch) {
     };
 }
 
-export default connect(mapStateToProps, mapDispatchToProps)(Todo);
+export default connect(mapStateToProps, mapDispatchToProps)(Post);
 
 const styles = StyleSheet.create({
     container: {

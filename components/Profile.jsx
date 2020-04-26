@@ -22,8 +22,8 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Feather";
 
 export function Profile(props) {
-    console.log("profile");
-    console.log(props.showPasswordInputButton);
+    // console.log("profile");
+    // console.log(props.showPasswordInputButton);
 
     let background_color = props.colorState.interpolate({
         inputRange: [0, 1],

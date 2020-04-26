@@ -34,17 +34,6 @@ if (!firebase.apps.length) {
     firebase.initializeApp(firebaseConfig);
 }
 
-// setTimeout(() => {
-//     checkForToken();
-// }, 2000);
-
-// checkForFirebaseCredential();
-// // Listen for authentication state to change.
-// firebase.auth().onAuthStateChanged(user => {
-//     if (user != null) {
-//         store.dispatch(loginFacebook(user))
-//     }
-// });
 const Stack = createStackNavigator();
 
 export const AuthContext = createContext(null);
@@ -67,7 +56,7 @@ function ProfileButton() {
 
 function HeaderRight() {
     async function logOut() {
-        console.log("signing out");
+        // console.log("signing out");
         try {
             await firebase.auth().signOut();
         } catch (e) {
@@ -190,136 +179,3 @@ export default function AuthNavigator() {
         </Provider>
     );
 }
-
-// export default function App() {
-//     console.log("[APP");
-//     console.log(store.getState().token);
-//     console.log(store.token);
-//     console.log("APP]");
-
-//     return (
-//         <Provider store={store}>
-//             <NavigationContainer>
-//                 <Stack.Navigator>
-//                     {store.getState().token !== "dummy-auth-token" ? (
-//                         <Stack.Screen
-//                             name="LogIn"
-//                             component={LogIn}
-//                             options={{ headerShown: false }}
-//                         />
-//                     ) : (
-//                         <Stack.Screen
-//                             name="YakYik"
-//                             component={Home}
-//                             options={{
-//                                 headerStyle: {
-//                                     backgroundColor: "#f4f3f1",
-//                                 },
-//                                 headerTitleStyle: {
-//                                     fontWeight: "bold",
-//                                 },
-//                                 headerTitleAlign: "center",
-//                             }}
-//                         />
-//                     )}
-//                 </Stack.Navigator>
-//             </NavigationContainer>
-//         </Provider>
-//     );
-// }
-
-//Check Async Storage if token is available
-//If it is available set loading state to false
-// async function checkForToken() {
-//     let token = await SecureStore.getItemAsync('token');
-
-//     store.dispatch({
-//         type: 'LOGIN_FACEBOOK',
-//         token: token,
-//         loading: false,
-//     })
-// }
-
-// async function checkForFirebaseCredential() {
-//     let credential = await SecureStore.getItemAsync('firebaseCredential');
-//     if (credential) {
-//         firebase
-//             .auth()
-//             .signInWithCredential(credential)
-//             .catch(error => {
-//                 console.log('Auth failed and here the error' + JSON.stringify(error));
-//             });
-//     }
-// }
-
-//Write token to secure storage and firebase credital.
-// async function saveTokenToSecureStorage(token, credential) {
-//     SecureStore.setItemAsync('token', token);
-//     //Save Firebase credential
-//     SecureStore.setItemAsync('firebaseCredential', credential);
-// }
-
-// async function logIn() {
-//     try {
-//         //Seed documentation on course site at mobileappdev.teachable.com
-//         //For default user names and passwords.
-//         await Facebook.initializeAsync('238123923880467');
-//         const {
-//             type,
-//             token,
-//             expires,
-//             permissions,
-//             declinedPermissions,
-//         } = await Facebook.logInWithReadPermissionsAsync({
-//             permissions: ['public_profile'],
-//         });
-//         if (type === 'success') {
-//             // Get the user's name using Facebook's Graph API
-//             const response = await fetch(
-//                 `https://graph.facebook.com/me?access_token=${token}`
-//             );
-//             let credential = firebase.auth.FacebookAuthProvider.credential(
-//                 token
-//             );
-//             firebase
-//                 .auth()
-//                 .signInWithCredential(credential)
-//                 .catch(error => {
-//                     console.log(
-//                         'Auth failed and here is the error ' + JSON.stringify(error)
-//                     );
-//                 });
-//             saveTokenToSecureStorage(token, credential);
-//         } else {
-//             // type === 'cancel'
-//         }
-//     } catch ({ message }) {
-//         alert(`Facebook Login Error: ${message}`);
-//     }
-// }
-
-const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        alignItems: "center",
-        justifyContent: "space-evenly",
-        backgroundColor: "#e8e6e3",
-    },
-    textInputContainer: {
-        flexDirection: "row",
-        alignItems: "baseline",
-        borderColor: "black",
-        borderBottomWidth: 1,
-        paddingRight: 10,
-        paddingBottom: 10,
-    },
-    textInput: {
-        flex: 1,
-        height: 20,
-        fontSize: 18,
-        fontWeight: "bold",
-        color: "black",
-        paddingLeft: 10,
-        minHeight: "3%",
-    },
-});
